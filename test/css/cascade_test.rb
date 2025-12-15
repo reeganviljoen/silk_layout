@@ -7,11 +7,10 @@ class CSSCascadeTest < Minitest::Test
     dom = SilkLayout::HTML::Parser.parse(html)
     rules = SilkLayout::CSS::Parser.parse_all([css])
     SilkLayout::CSS::Cascade.apply(dom, rules)
-    
+
     target = find_first_element(dom)
     target.computed_style[property]
   end
-
 
   def find_first_element(node)
     return node if node.element? && content_element?(node)
@@ -53,4 +52,3 @@ class CSSCascadeTest < Minitest::Test
     assert_equal "green", value
   end
 end
-

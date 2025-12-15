@@ -3,17 +3,14 @@
 module SilkLayout
   module CSS
     class Cascade
-      def self.apply(node, rules)
-        traverse(node) do |n|
-          next unless n.element?
+      def self.apply(node, rules, parent_style = nil)
+        node.children.each do |child|
+          matching = rules.select { |rule| rule.selector.match?(child) }
+          matching.sort_by! { |rule| [rule.specificity, rule.order] }
 
-          matching = rules.select { |rule| rule.selector.match?(n) }
+          child.computed_style = ComputedStyle.new(matching, parent_style)
 
-          matching.sort_by! do |rule|
-            [rule.specificity, rule.order]
-          end
-
-          n.computed_style = ComputedStyle.new(matching)
+          apply(child, rules, child.computed_style)
         end
       end
 

@@ -14,23 +14,47 @@ module SilkLayout
       end
 
       def element?
-        !@tag.nil?
+        !tag.nil?
       end
 
       def text?
-        @tag.nil? && @text
+        tag.nil?
       end
 
       def self.from_nokogiri(node)
+        return nil if node.nil?
+
         if node.text?
-          new(tag: nil, attributes: {}, children: [], text: node.text)
+          build_text_node(node)
         else
-          new(
-            tag: node.name,
-            attributes: node.attributes.transform_values(&:value),
-            children: node.children.map { from_nokogiri(_1) }
-          )
+          build_element_node(node)
         end
+      end
+
+      # -----
+      # Class helpers (intentionally public)
+      # -----
+
+      def self.build_text_node(node)
+        text = node.text.strip
+        return nil if text.empty?
+
+        new(
+          tag: nil,
+          attributes: {},
+          children: [],
+          text: text
+        )
+      end
+
+      def self.build_element_node(node)
+        children = node.children.map { |child| from_nokogiri(child) }.compact
+
+        new(
+          tag: node.name,
+          attributes: node.attributes.transform_values(&:value),
+          children: children
+        )
       end
     end
   end

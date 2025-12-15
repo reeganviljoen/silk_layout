@@ -14,6 +14,8 @@ module SilkLayout
     autoload :Parser, "silk_layout/css/parser"
     autoload :Cascade, "silk_layout/css/cascade"
     autoload :ComputedStyle, "silk_layout/css/computed_style"
+    autoload :Rule, "silk_layout/css/rule"
+    autoload :Selector, "silk_layout/css/selector"
   end
 
   module Layout
@@ -22,6 +24,7 @@ module SilkLayout
     autoload :Inline, "silk_layout/layout/inline"
     autoload :Page, "silk_layout/layout/page"
     autoload :Paginator, "silk_layout/layout/paginator"
+    autoload :Builder, "silk_layout/layout/builder"
   end
 
   module Render

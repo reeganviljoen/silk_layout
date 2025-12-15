@@ -14,11 +14,10 @@ module SilkLayout
         pages = [Page.new]
         root.children.each do |box|
           if pages.last.fits?(box)
-            pages.last.add(box)
           else
             pages << Page.new
-            pages.last.add(box)
           end
+          pages.last.add(box)
         end
 
         pages

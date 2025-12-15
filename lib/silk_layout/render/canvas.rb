@@ -8,14 +8,14 @@ module SilkLayout
       end
 
       def draw(page)
-        page.boxes.each { draw_box(_1) }
+        page.boxes.each { draw_box(it) }
       end
 
       def draw_box(box)
         if box.node.text?
           @canvas.text(box.node.text.strip, at: [0, 800 - box.y], size: 12)
         end
-        box.children.each { draw_box(_1) }
+        box.children.each { draw_box(it) }
       end
     end
   end

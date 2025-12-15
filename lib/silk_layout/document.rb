@@ -13,7 +13,11 @@ module SilkLayout
       dom = HTML::Parser.parse(html)
       rules = CSS::Parser.parse_all(stylesheets)
       CSS::Cascade.apply(dom, rules)
-      Layout::Paginator.new(dom).pages
+
+      root_box = Layout::Builder.build(dom)
+      root_box.layout(595)
+
+      root_box
     end
 
     def to_pdf(io)

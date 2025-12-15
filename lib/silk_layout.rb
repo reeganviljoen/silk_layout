@@ -27,6 +27,8 @@ module SilkLayout
     autoload :Paginator, "silk_layout/layout/paginator"
     autoload :Builder, "silk_layout/layout/builder"
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
+    autoload :Context, 'silk_layout/layout/context'
+    autoload :BlockLayout, 'silk_layout/layout/block_layout'
   end
 
   module Render

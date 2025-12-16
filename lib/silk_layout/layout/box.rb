@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 module SilkLayout
@@ -23,6 +22,7 @@ module SilkLayout
 
     class BlockBox < Box; end
     class InlineBox < Box; end
+
     class AnonymousBlockBox < Box
       def initialize
         super(nil)
@@ -30,4 +30,3 @@ module SilkLayout
     end
   end
 end
-

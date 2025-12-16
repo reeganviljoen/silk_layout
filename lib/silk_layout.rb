@@ -22,18 +22,22 @@ module SilkLayout
   module Layout
     autoload :Box, "silk_layout/layout/box"
     autoload :Block, "silk_layout/layout/block"
+    autoload :BlockBox, "silk_layout/layout/block"
+    autoload :InlineBox, "silk_layout/layout/block"
+    autoload :AnonymousBlockBox, "silk_layout/layout/block"
     autoload :Inline, "silk_layout/layout/inline"
     autoload :Page, "silk_layout/layout/page"
     autoload :Paginator, "silk_layout/layout/paginator"
     autoload :Builder, "silk_layout/layout/builder"
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
-    autoload :Context, 'silk_layout/layout/context'
-    autoload :BlockLayout, 'silk_layout/layout/block_layout'
+    autoload :Context, "silk_layout/layout/context"
+    autoload :BlockLayout, "silk_layout/layout/block_layout"
+    autoload :Engine, "silk_layout/layout/engine"
+    autoload :Root, "silk_layout/layout/root"
   end
 
   module Render
-    autoload :PDF, "silk_layout/render/pdf"
-    autoload :Canvas, "silk_layout/render/canvas"
+    autoload :PdfRenderer, "silk_layout/render/pdf_renderer"
   end
 
   module Util

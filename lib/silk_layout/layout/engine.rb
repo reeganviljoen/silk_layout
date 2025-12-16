@@ -12,11 +12,14 @@ module SilkLayout
         # 2. Build box tree
         box_tree = BoxBuilder.build(dom)
 
-        # 3. Perform block layout
-        context = Context.new(width: viewport_width)
-        BlockLayout.layout(box_tree, context)
+        # 3. Find Root
+        root = Root.find(box_tree)
 
-        box_tree
+        # 4. Perform block layout
+        context = Context.new(width: viewport_width)
+        BlockLayout.layout(root, context)
+
+        root
       end
     end
   end

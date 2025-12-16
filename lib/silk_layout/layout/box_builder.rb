@@ -33,7 +33,7 @@ module SilkLayout
         box.add_child(inline_buffer) if inline_buffer
         box
       end
-   
+
       def self.create_box(node)
         return nil unless node.element?
         display = node.computed_style["display"]

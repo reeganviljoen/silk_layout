@@ -17,15 +17,14 @@ module SilkLayout
         box.children.each do |child|
           if child.is_a?(BlockBox) || child.is_a?(AnonymousBlockBox)
             layout(child, context, current_y)
-            current_y += child.height
           else
             # inline boxes: fixed line height placeholder
             child.x = 0
             child.y = current_y
             child.width = context.width
             child.height = DEFAULT_LINE_HEIGHT
-            current_y += child.height
           end
+          current_y += child.height
         end
 
         content_height = current_y - box.y

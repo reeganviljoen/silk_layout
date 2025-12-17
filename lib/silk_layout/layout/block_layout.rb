@@ -8,10 +8,11 @@ module SilkLayout
       DEFAULT_LINE_HEIGHT = 16
       
 
-      def self.layout(box, context, cursor_y = 0)
+      def self.layout(box, context, cursor_y = 0, parent_x = 0)
         # --- Position this box (margin applies outside)
-        box.x = box.margin[:left]
+        box.x = parent_x + box.margin[:left]
         box.y = cursor_y + box.margin[:top]
+
 
         # --- Content box origin
         content_x =
@@ -51,7 +52,7 @@ module SilkLayout
           end
 
           # --- Layout block child
-          layout(child, context, current_y)
+          layout(child, context, current_y, content_x)
 
           current_y +=
             child.height +

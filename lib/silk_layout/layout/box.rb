@@ -4,7 +4,7 @@ module SilkLayout
   module Layout
     class Box
       attr_reader :node, :children
-      attr_accessor :x, :y, :width, :height
+      attr_accessor :x, :y, :width, :height, :children
 
       def initialize(node)
         @node = node

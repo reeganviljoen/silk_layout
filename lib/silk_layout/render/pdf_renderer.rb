@@ -12,8 +12,6 @@ module SilkLayout
         doc = HexaPDF::Document.new
         page = doc.pages.add([0, 0, PAGE_WIDTH, PAGE_HEIGHT])
         canvas = page.canvas
-        canvas.font("Helvetica", size: 12)
-
         render_box(canvas, box_tree)
 
         doc.write(output_path)
@@ -34,28 +32,17 @@ module SilkLayout
           .rectangle(x, y, box.width, box.height)
           .stroke
 
-        # 🔑 DEBUG TEXT RENDERING
-        text = extract_text(box.node)
-        return if text.empty?
-
-        padding = 8
-
-        canvas.text(
-          text,
-          at: [
-            x + padding,
-            y + box.height - padding - 12
-          ]
-        )
+        if box.respond_to?(:text) && box.text
+          font_size = 12
+          canvas.font("Helvetica", size: font_size)
+          canvas.text(
+            box.text,
+            at: [box.x, PAGE_HEIGHT - box.y - font_size],
+          )
+        end
       end
 
-      def self.extract_text(node)
-        return "" unless node
-
-        node.text || node.children.map { |c| extract_text(c) }.join
-      end
-
-      private_class_method :render_box, :extract_text
+      private_class_method :render_box
 
       private_class_method :render_box
     end

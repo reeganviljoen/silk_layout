@@ -26,6 +26,8 @@ module SilkLayout
     autoload :InlineBox, "silk_layout/layout/block"
     autoload :AnonymousBlockBox, "silk_layout/layout/block"
     autoload :Inline, "silk_layout/layout/inline"
+    autoload :TextBox, "silk_layout/layout/inline"
+    autoload :LineBox, "silk_layout/layout/inline"
     autoload :Page, "silk_layout/layout/page"
     autoload :Paginator, "silk_layout/layout/paginator"
     autoload :Builder, "silk_layout/layout/builder"
@@ -42,5 +44,13 @@ module SilkLayout
 
   module Util
     autoload :Measurements, "silk_layout/util/measurements"
+  end
+
+  def self.render(html, css, out)
+    dom = SilkLayout::HTML::Parser.parse(html)
+    rules = SilkLayout::CSS::Parser.parse_all([css])
+    box_tree = SilkLayout::Layout::Engine.layout(dom, rules)
+
+    SilkLayout::Render::PdfRenderer.render(box_tree, out)
   end
 end

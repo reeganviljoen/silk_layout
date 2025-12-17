@@ -14,7 +14,7 @@ module SilkLayout
         inline_buffer = nil
 
         node.children.each do |child|
-          child_box = build_box(child)
+          child_box = build_box(child) || build_text(child)
           next unless child_box
 
           if box.is_a?(BlockBox) && child_box.is_a?(InlineBox)
@@ -46,6 +46,12 @@ module SilkLayout
         else
           BlockBox.new(node)
         end
+      end
+
+      def self.build_text(node)
+        return nil unless node.text
+
+        TextBox.new(node.text)
       end
 
       private_class_method :build_box, :create_box

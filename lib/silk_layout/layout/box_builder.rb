@@ -36,22 +36,51 @@ module SilkLayout
 
       def self.create_box(node)
         return nil unless node.element?
-        display = node.computed_style["display"]
+        box =
+          case node.computed_style["display"]
+          when "block"
+            BlockBox.new(node)
+          when "inline"
+            InlineBox.new(node)
+          else
+            BlockBox.new(node)
+          end
 
-        case display
-        when "block"
-          BlockBox.new(node)
-        when "inline"
-          InlineBox.new(node)
-        else
-          BlockBox.new(node)
-        end
+          style = node.computed_style
+
+          box.margin = {
+            top: px(style["margin-top"] || style["margin"]),
+            right: px(style["margin-right"] || style["margin"]),
+            bottom: px(style["margin-bottom"] || style["margin"]),
+            left: px(style["margin-left"] || style["margin"])
+          }
+
+          box.padding = {
+            top: px(style["padding-top"] || style["padding"]),
+            right: px(style["padding-right"] || style["padding"]),
+            bottom: px(style["padding-bottom"] || style["padding"]),
+            left: px(style["padding-left"] || style["padding"])
+          }
+
+          box.border = {
+            top: px(style["border-top-width"] || style["border-width"]),
+            right: px(style["border-right-width"] || style["border-width"]),
+            bottom: px(style["border-bottom-width"] || style["border-width"]),
+            left: px(style["border-left-width"] || style["border-width"])
+          }
+
+        box
       end
 
       def self.build_text(node)
         return nil unless node.text
 
         TextBox.new(node.text)
+      end
+
+      def self.px(value)
+        return 0 unless value
+        value.to_s.delete_suffix("px").to_i
       end
 
       private_class_method :build_box, :create_box

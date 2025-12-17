@@ -16,33 +16,30 @@ module SilkLayout
 
         doc.write(output_path)
       end
-
+      
       def self.render_box(canvas, box)
-        # Render children first (debug clarity)
-        box.children.each do |child|
-          render_box(canvas, child)
-        end
-
-        # Draw this box
-        x = box.x
-        y = PAGE_HEIGHT - box.y - box.height
+        # Draw border box
+        bx = box.border_box_x
+        by = PAGE_HEIGHT - box.border_box_y - box.border_box_height
 
         canvas
           .stroke_color(0, 0, 0)
-          .rectangle(x, y, box.width, box.height)
+          .rectangle(bx, by, box.border_box_width, box.border_box_height)
           .stroke
 
-        if box.respond_to?(:text) && box.text
-          font_size = 12
-          canvas.font("Helvetica", size: font_size)
+        # Draw text (CONTENT box!)
+        if box.is_a?(SilkLayout::Layout::TextBox)
+          cx = box.content_box_x
+          cy = PAGE_HEIGHT - box.content_box_y - box.content_box_height
+          canvas.font("Helvetica", size: 12)
           canvas.text(
             box.text,
-            at: [box.x, PAGE_HEIGHT - box.y - font_size]
-          )
+            at: [cx, cy + box.content_box_height - 12]
+         )
         end
-      end
 
-      private_class_method :render_box
+        box.children.each { |child| render_box(canvas, child) }
+      end
 
       private_class_method :render_box
     end

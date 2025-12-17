@@ -37,7 +37,7 @@ module SilkLayout
           canvas.font("Helvetica", size: font_size)
           canvas.text(
             box.text,
-            at: [box.x, PAGE_HEIGHT - box.y - font_size],
+            at: [box.x, PAGE_HEIGHT - box.y - font_size]
           )
         end
       end

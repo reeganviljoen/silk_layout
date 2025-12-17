@@ -102,15 +102,21 @@ module SilkLayout
           child.x = parent_x + cursor_x
           child.y = parent_y
           child.width = measure_text(child)
-          child.height = LINE_HEIGHT
+          child.height =
+            if child.is_a?(TextBox)
+              child.line_height
+            else
+              LINE_HEIGHT
+            end
+
 
           cursor_x += child.width
           line.add_child(child)
         end
 
         line.width = cursor_x
-        line.height = LINE_HEIGHT
-
+        line.height = inline_children.map(&:height).max || LINE_HEIGHT
+        
         line
       end
 
@@ -120,10 +126,17 @@ module SilkLayout
 
         node.children.any? { |c| has_text?(c) }
       end
-
-      def self.measure_text(text_box)
-        # temporary: fixed-width font assumption
-        text_box.text.length * 8
+      
+      
+      def self.measure_text(box)
+        case box
+        when TextBox
+          box.text.length * (box.font_size * 0.6)
+        when InlineBox
+          box.children.sum { |child| measure_text(child) }
+        else
+          0
+        end
       end
 
       private_class_method :layout_inline, :measure_text

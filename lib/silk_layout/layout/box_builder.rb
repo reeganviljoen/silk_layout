@@ -48,6 +48,14 @@ module SilkLayout
 
           style = node.computed_style
 
+          # Width handling
+          if style["width"] && style["width"] != "auto"
+            box.explicit_width = true
+            box.width = px(style["width"])
+          else
+            box.explicit_width = false
+          end
+
           box.margin = {
             top: px(style["margin-top"] || style["margin"]),
             right: px(style["margin-right"] || style["margin"]),
@@ -75,7 +83,8 @@ module SilkLayout
       def self.build_text(node)
         return nil unless node.text
 
-        TextBox.new(node.text)
+        parent_style = node.computed_style
+        TextBox.new(node.text, parent_style)
       end
 
       def self.px(value)

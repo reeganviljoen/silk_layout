@@ -29,13 +29,14 @@ module SilkLayout
 
         # Draw text (CONTENT box!)
         if box.is_a?(SilkLayout::Layout::TextBox)
-          cx = box.content_box_x
-          cy = PAGE_HEIGHT - box.content_box_y - box.content_box_height
-          canvas.font("Helvetica", size: 12)
+          canvas.font(box.font_family, size: box.font_size)
           canvas.text(
             box.text,
-            at: [cx, cy + box.content_box_height - 12]
-         )
+            at: [
+              box.x,
+              PAGE_HEIGHT - box.y - box.font_size
+            ]
+          )
         end
 
         box.children.each { |child| render_box(canvas, child) }

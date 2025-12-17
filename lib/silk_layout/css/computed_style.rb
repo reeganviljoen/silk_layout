@@ -20,6 +20,15 @@ module SilkLayout
         @values[property]
       end
 
+      def width
+        @values["width"]
+      end
+
+      def explicit_width?
+        value = @values["width"]
+        value && value != "auto"
+      end
+
       private
 
       def apply_inheritance(parent)

@@ -9,7 +9,7 @@ module SilkLayout
       
 
       def self.layout(box, context, cursor_y = 0)
-        # --- Position this box (margin applies OUTSIDE)
+        # --- Position this box (margin applies outside)
         box.x = box.margin[:left]
         box.y = cursor_y + box.margin[:top]
 
@@ -20,12 +20,15 @@ module SilkLayout
         content_y =
           box.y + box.border[:top] + box.padding[:top]
 
-        # --- Compute available width for content
-        box.width =
-          context.width -
-          box.margin[:left] - box.margin[:right] -
-          box.border[:left] - box.border[:right] -
-          box.padding[:left] - box.padding[:right]
+        # --- Determine content width
+        if box.explicit_width
+          content_width =
+            box.width -
+            box.border[:left] - box.border[:right] -
+            box.padding[:left] - box.padding[:right]
+        else
+          content_width = 0 # will grow based on children
+        end
 
         current_y = content_y
         new_children = []
@@ -37,9 +40,9 @@ module SilkLayout
             next
           end
 
-          # Flush inline buffer into a line box
+          # --- Flush inline buffer into a line box
           if inline_buffer.any?
-            line = layout_inline(inline_buffer, context, content_x, current_y)
+            line = layout_inline(inline_buffer, content_width, content_x, current_y)
             line.x = content_x
             line.y = current_y
             current_y += line.height
@@ -47,18 +50,20 @@ module SilkLayout
             inline_buffer.clear
           end
 
-          # Layout block child
+          # --- Layout block child
           layout(child, context, current_y)
-          current_y += child.height +
-                      child.margin[:top] +
-                      child.margin[:bottom]
+
+          current_y +=
+            child.height +
+            child.margin[:top] +
+            child.margin[:bottom]
 
           new_children << child
         end
 
-        # Flush remaining inline content
+        # --- Flush remaining inline content
         if inline_buffer.any?
-          line = layout_inline(inline_buffer, context, content_x, current_y)
+          line = layout_inline(inline_buffer, content_width, content_x, current_y)
           line.x = content_x
           line.y = current_y
           current_y += line.height
@@ -67,9 +72,21 @@ module SilkLayout
 
         box.children = new_children
 
-        # --- Final height includes padding + border
+        # --- Compute content height
         content_height = current_y - content_y
 
+        # --- Auto-width boxes grow to fit children
+        unless box.explicit_width
+          max_child_width =
+            box.children.map(&:width).max || 0
+
+          box.width =
+            max_child_width +
+            box.padding[:left] + box.padding[:right] +
+            box.border[:left] + box.border[:right]
+        end
+
+        # --- Final box height includes padding + border
         box.height =
           content_height +
           box.padding[:top] + box.padding[:bottom] +

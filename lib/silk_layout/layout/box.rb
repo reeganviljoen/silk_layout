@@ -11,7 +11,8 @@ module SilkLayout
         :node,
         :margin,
         :padding,
-        :border
+        :border,
+        :explicit_width
 
       def initialize(node)
         @node = node
@@ -25,6 +26,8 @@ module SilkLayout
         @margin  = { top: 0, right: 0, bottom: 0, left: 0 }
         @padding = { top: 0, right: 0, bottom: 0, left: 0 }
         @border  = { top: 0, right: 0, bottom: 0, left: 0 }
+
+        @explicit_width = false
       end
 
       def add_child(box)

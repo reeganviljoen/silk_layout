@@ -1,0 +1,15 @@
+
+div {
+  padding: 20px;
+  border-width: 2px;
+}
+
+p {
+  display: block;
+  margin-bottom: 10px;
+}
+
+span {
+  display: inline;
+  font-size: 32px;
+}

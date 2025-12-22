@@ -4,6 +4,9 @@ module SilkLayout
   module CSS
     class Cascade
       def self.apply(node, rules, parent_style = nil)
+        return unless node
+        return unless node.respond_to?(:element?)
+
         matching = rules.select { |rule| rule.selector.match?(node) }
         matching.sort_by! { |rule| [rule.specificity, rule.order] }
 

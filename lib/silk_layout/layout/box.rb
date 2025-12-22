@@ -12,6 +12,7 @@ module SilkLayout
         :margin,
         :padding,
         :border,
+        :border_color,
         :explicit_width
 
       def initialize(node)
@@ -26,6 +27,12 @@ module SilkLayout
         @margin  = { top: 0, right: 0, bottom: 0, left: 0 }
         @padding = { top: 0, right: 0, bottom: 0, left: 0 }
         @border  = { top: 0, right: 0, bottom: 0, left: 0 }
+        @border_color = {
+          top: :black,
+          right: :black,
+          bottom: :black,
+          left: :black
+        }
 
         @explicit_width = false
       end

@@ -1,0 +1,9 @@
+
+div {
+  border-width: 0;
+  padding: 0;
+}
+
+p {
+  display: block;
+}

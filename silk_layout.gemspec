@@ -18,4 +18,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "standard"
+  spec.add_development_dependency "ferrum"
+  spec.add_development_dependency "chunky_png"
 end

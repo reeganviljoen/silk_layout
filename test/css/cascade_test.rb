@@ -3,6 +3,10 @@
 require "test_helper"
 
 class CSSCascadeTest < Minitest::Test
+  def test_stuff
+    binding.irb
+  end
+
   def style_for(html, css, property)
     dom = SilkLayout::HTML::Parser.parse(html)
     rules = SilkLayout::CSS::Parser.parse_all([css])

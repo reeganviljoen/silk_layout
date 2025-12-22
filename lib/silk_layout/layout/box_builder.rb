@@ -35,7 +35,9 @@ module SilkLayout
       end
 
       def self.create_box(node)
-        return nil unless node.element?
+        return nil unless node
+        return nil unless node.respond_to?(:element?) && node.element?
+
         box =
           case node.computed_style["display"]
           when "block"
@@ -77,6 +79,13 @@ module SilkLayout
             left: px(style["border-left-width"] || style["border-width"])
           }
 
+          box.border_color = {
+            top:   color(style["border-top-color"] || style["border-color"]),
+            right: color(style["border-right-color"] || style["border-color"]),
+            bottom:color(style["border-bottom-color"] || style["border-color"]),
+            left:  color(style["border-left-color"] || style["border-color"])
+          }
+
         box
       end
 
@@ -90,6 +99,11 @@ module SilkLayout
       def self.px(value)
         return 0 unless value
         value.to_s.delete_suffix("px").to_i
+      end
+
+      def self.color(value)
+        return :black unless value
+        value.to_sym
       end
 
       private_class_method :build_box, :create_box

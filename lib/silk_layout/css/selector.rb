@@ -8,6 +8,7 @@ module SilkLayout
       end
 
       def match?(node)
+        return false unless node.respond_to?(:element?)
         return false unless node.element?
         return false if node.tag.nil?
 

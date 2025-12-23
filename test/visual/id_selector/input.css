@@ -1,0 +1,16 @@
+
+/* ID selector under test */
+#card {
+  width: 360px;
+  padding: 16px;
+  border-width: 3px;
+  border-color: black;
+  display: block;
+}
+
+/* Element selectors */
+p {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}

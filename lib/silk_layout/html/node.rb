@@ -17,13 +17,7 @@ module SilkLayout
         !tag.nil?
       end
 
-      def text?
-        tag.nil?
-      end
-
       def self.from_nokogiri(node)
-        return nil if node.nil?
-
         if node.text?
           build_text_node(node)
         else

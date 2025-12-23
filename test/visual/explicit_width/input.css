@@ -1,0 +1,14 @@
+/* Explicit layout root */
+.container {
+  width: 400px;
+  border-width: 2px;
+  border-color: black;
+  padding: 20px;
+  display: block;
+}
+
+p {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+}

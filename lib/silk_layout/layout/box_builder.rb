@@ -51,10 +51,10 @@ module SilkLayout
           style = node.computed_style
 
           # Width handling
-          if style["width"] && style["width"] != "auto"
+          if style.explicit_width?
             box.explicit_width = true
             box.width = px(style["width"])
-          else
+          else 
             box.explicit_width = false
           end
 

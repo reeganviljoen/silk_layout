@@ -2,4 +2,6 @@
 tmp/visual/
 
 # Ruby Lsp
-.ruby-lsp/ 
+.ruby-lsp/
+#coverage
+coverage/

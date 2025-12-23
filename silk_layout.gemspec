@@ -20,4 +20,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "standard"
   spec.add_development_dependency "ferrum"
   spec.add_development_dependency "chunky_png"
+  spec.add_development_dependency "irb"
 end

@@ -1,3 +1,5 @@
 # Visual regression artifacts
 tmp/visual/
 
+# Ruby Lsp
+.ruby-lsp/ 

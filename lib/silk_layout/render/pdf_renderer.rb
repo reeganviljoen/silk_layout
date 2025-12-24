@@ -58,38 +58,72 @@ module SilkLayout
       # ------------------------------------------------------------
 
       def self.draw_borders(canvas, box, page_height_pt)
-        x_pt = px_to_pt(box.border_box_x)
-        y_pt = page_height_pt - px_to_pt(box.border_box_y + box.border_box_height)
-        w_pt = px_to_pt(box.border_box_width)
-        h_pt = px_to_pt(box.border_box_height)
+        return if box.is_a?(SilkLayout::Layout::AnonymousBlockBox)
+        return unless box.has_border
 
-        draw_border(canvas, x_pt, y_pt + h_pt, w_pt, box.border[:top],    box.border_color[:top])
-        draw_border(canvas, x_pt, y_pt,         w_pt, box.border[:bottom], box.border_color[:bottom])
-        draw_border(canvas, x_pt, y_pt,          box.border[:left],  h_pt, box.border_color[:left])
-        draw_border(canvas, x_pt + w_pt - px_to_pt(box.border[:right]),
-                    y_pt,
-                    box.border[:right],
-                    h_pt,
-                    box.border_color[:right])
-      end
+        x = px_to_pt(box.border_box_x)
+        y = page_height_pt - px_to_pt(box.border_box_y + box.border_box_height)
+        w = px_to_pt(box.border_box_width)
+        h = px_to_pt(box.border_box_height)
 
-      def self.draw_border(canvas, x, y, w, h, color)
-        return if w <= 0 || h <= 0
+        # --- Top border
+        if box.border[:top] > 0
+          canvas = set_color(canvas, box.border_color[:top])
+          canvas.rectangle(
+            x,
+            y + h - px_to_pt(box.border[:top]),
+            w,
+            px_to_pt(box.border[:top])
+          ).fill
+        end
 
-        set_color(canvas, color)
-        canvas.rectangle(x, y, px_to_pt(w), px_to_pt(h)).fill
+        # --- Bottom border
+        if box.border[:bottom] > 0
+          canvas = set_color(canvas, box.border_color[:bottom])
+          canvas.rectangle(
+            x,
+            y,
+            w,
+            px_to_pt(box.border[:bottom])
+          ).fill
+        end
+
+        # --- Left border
+        if box.border[:left] > 0
+          canvas = set_color(canvas, box.border_color[:left])
+          canvas.rectangle(
+            x,
+            y,
+            px_to_pt(box.border[:left]),
+            h
+          ).fill
+        end
+
+        # --- Right border
+        if box.border[:right] > 0
+          canvas = set_color(canvas, box.border_color[:right])
+          canvas.rectangle(
+            x + w - px_to_pt(box.border[:right]),
+            y,
+            px_to_pt(box.border[:right]),
+            h
+          ).fill
+        end
       end
 
       # ------------------------------------------------------------
 
       def self.set_color(canvas, color)
+        return unless color
+
         case color
         when :red   then canvas.fill_color(1, 0, 0)
         when :green then canvas.fill_color(0, 1, 0)
         when :blue  then canvas.fill_color(0, 0, 1)
-        else
-          canvas.fill_color(0, 0, 0)
+        when :black then canvas.fill_color(0, 0, 0)
+          canvas.fill_color(1,1, 1)
         end
+        canvas
       end
 
       # ------------------------------------------------------------

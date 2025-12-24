@@ -13,7 +13,8 @@ module SilkLayout
         :padding,
         :border,
         :border_color,
-        :explicit_width
+        :explicit_width,
+        :has_border
 
       def initialize(node)
         @node = node
@@ -28,10 +29,10 @@ module SilkLayout
         @padding = { top: 0, right: 0, bottom: 0, left: 0 }
         @border  = { top: 0, right: 0, bottom: 0, left: 0 }
         @border_color = {
-          top: :black,
-          right: :black,
-          bottom: :black,
-          left: :black
+          top: nil,
+          right: nil,
+          bottom: nil,
+          left: nil
         }
 
         @explicit_width = false

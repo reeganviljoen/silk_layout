@@ -14,6 +14,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "crass"
   spec.add_dependency "hexapdf"
   spec.add_dependency "nokogiri"
+  spec.add_dependency "activesupport"
 
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "rake"

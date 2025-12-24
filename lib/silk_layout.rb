@@ -1,9 +1,9 @@
 # frozen_string_literal: true
+  
+require 'active_support/all'
 
 module SilkLayout
   autoload :VERSION, "silk_layout/version"
-  autoload :CLI, "silk_layout/cli"
-  autoload :Document, "silk_layout/document"
 
   module HTML
     autoload :Parser, "silk_layout/html/parser"
@@ -28,9 +28,6 @@ module SilkLayout
     autoload :Inline, "silk_layout/layout/inline"
     autoload :TextBox, "silk_layout/layout/inline"
     autoload :LineBox, "silk_layout/layout/inline"
-    autoload :Page, "silk_layout/layout/page"
-    autoload :Paginator, "silk_layout/layout/paginator"
-    autoload :Builder, "silk_layout/layout/builder"
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
     autoload :Context, "silk_layout/layout/context"
     autoload :BlockLayout, "silk_layout/layout/block_layout"
@@ -40,10 +37,6 @@ module SilkLayout
 
   module Render
     autoload :PdfRenderer, "silk_layout/render/pdf_renderer"
-  end
-
-  module Util
-    autoload :Measurements, "silk_layout/util/measurements"
   end
 
   def self.render(html, css, out)

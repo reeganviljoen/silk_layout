@@ -34,6 +34,7 @@ module SilkLayout
         box
       end
 
+
       def self.create_box(node)
         return nil unless node
         return nil unless node.respond_to?(:element?) && node.element?
@@ -48,43 +49,63 @@ module SilkLayout
             BlockBox.new(node)
           end
 
-          style = node.computed_style
+        style = node.computed_style
 
-          # Width handling
-          if style.explicit_width?
-            box.explicit_width = true
-            box.width = px(style["width"])
-          else 
-            box.explicit_width = false
-          end
+        # ----------------------------
+        # Width handling
+        # ----------------------------
+        if style.respond_to?(:explicit_width?) && style.explicit_width?
+          box.explicit_width = true
+          box.width = px(style["width"])
+        else
+          box.explicit_width = false
+        end
 
-          box.margin = {
-            top: px(style["margin-top"] || style["margin"]),
-            right: px(style["margin-right"] || style["margin"]),
-            bottom: px(style["margin-bottom"] || style["margin"]),
-            left: px(style["margin-left"] || style["margin"])
-          }
+        # ----------------------------
+        # Margin
+        # ----------------------------
+        box.margin = {
+          top:    px(style["margin-top"]    || style["margin"]),
+          right:  px(style["margin-right"]  || style["margin"]),
+          bottom: px(style["margin-bottom"] || style["margin"]),
+          left:   px(style["margin-left"]   || style["margin"])
+        }
 
-          box.padding = {
-            top: px(style["padding-top"] || style["padding"]),
-            right: px(style["padding-right"] || style["padding"]),
-            bottom: px(style["padding-bottom"] || style["padding"]),
-            left: px(style["padding-left"] || style["padding"])
-          }
+        # ----------------------------
+        # Padding
+        # ----------------------------
+        box.padding = {
+          top:    px(style["padding-top"]    || style["padding"]),
+          right:  px(style["padding-right"]  || style["padding"]),
+          bottom: px(style["padding-bottom"] || style["padding"]),
+          left:   px(style["padding-left"]   || style["padding"])
+        }
 
-          box.border = {
-            top: px(style["border-top-width"] || style["border-width"]),
-            right: px(style["border-right-width"] || style["border-width"]),
-            bottom: px(style["border-bottom-width"] || style["border-width"]),
-            left: px(style["border-left-width"] || style["border-width"])
-          }
+        # ----------------------------
+        # Border widths
+        # ----------------------------
+        box.border = {
+          top:    px(style["border-top-width"]    || style["border-width"]),
+          right:  px(style["border-right-width"]  || style["border-width"]),
+          bottom: px(style["border-bottom-width"] || style["border-width"]),
+          left:   px(style["border-left-width"]   || style["border-width"])
+        }
 
-          box.border_color = {
-            top:   color(style["border-top-color"] || style["border-color"]),
-            right: color(style["border-right-color"] || style["border-color"]),
-            bottom:color(style["border-bottom-color"] || style["border-color"]),
-            left:  color(style["border-left-color"] || style["border-color"])
-          }
+        # Border exists if ANY side has width
+        box.has_border = box.border.values.any? { |v| v > 0 }
+
+        # ----------------------------
+        # Border colors
+        # ----------------------------
+        # CSS default: black if border exists and color not specified
+        default_color = box.has_border ? nil : nil
+
+        box.border_color = {
+          top:    color(style["border-top-color"]    || style["border-color"]) || default_color,
+          right:  color(style["border-right-color"]  || style["border-color"]) || default_color,
+          bottom: color(style["border-bottom-color"] || style["border-color"]) || default_color,
+          left:   color(style["border-left-color"]   || style["border-color"]) || default_color
+        }
 
         box
       end
@@ -100,9 +121,9 @@ module SilkLayout
         return 0 unless value
         value.to_s.delete_suffix("px").to_i
       end
-
+      
       def self.color(value)
-        return :black unless value
+        return nil unless value
         value.to_sym
       end
 

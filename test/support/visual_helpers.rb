@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 require "silk_layout"
@@ -9,9 +8,9 @@ require "securerandom"
 require "tmpdir"
 
 module VisualHelpers
-  VIEWPORT_WIDTH  = 800
+  VIEWPORT_WIDTH = 800
   VIEWPORT_HEIGHT = 1000
-  VIEWPORT        = [VIEWPORT_WIDTH, VIEWPORT_HEIGHT].freeze
+  VIEWPORT = [VIEWPORT_WIDTH, VIEWPORT_HEIGHT].freeze
 
   TMP_DIR = "tmp/visual"
 
@@ -26,8 +25,8 @@ module VisualHelpers
     FileUtils.mkdir_p(File.dirname(out_pdf))
 
     html = File.read(html_path)
-    css  = File.read(css_path)
-    binding.irb if html == ''
+    css = File.read(css_path)
+    binding.irb if html == ""
     SilkLayout.render(html, css, out_pdf)
   end
 
@@ -36,7 +35,7 @@ module VisualHelpers
   # ----------------------------
   def render_browser(html_path, css_path, out_pdf)
     html = File.read(html_path)
-    css  = File.read(css_path)
+    css = File.read(css_path)
 
     tmp_html = File.join(Dir.tmpdir, "#{SecureRandom.hex}.html")
 
@@ -89,7 +88,11 @@ module VisualHelpers
     )
 
     browser.quit
-    File.delete(tmp_html) rescue nil
+    begin
+      File.delete(tmp_html)
+    rescue
+      nil
+    end
   end
 
   # ----------------------------
@@ -100,10 +103,11 @@ module VisualHelpers
 
     # 72 DPI is CRITICAL:
     # 1 CSS px = 1 pt at 96 DPI → convert down for pixel match
+    # Use [0] to only convert first page, avoiding multi-page file issues
     system(
-      "magick",
+      "convert",
       "-density", "72",
-      pdf_path,
+      "#{pdf_path}[0]",
       png_path
     ) or raise "ImageMagick convert failed"
   end
@@ -116,7 +120,7 @@ module VisualHelpers
     b = ChunkyPNG::Image.from_file(b_path)
 
     # Crop both to smallest common area
-    width  = [a.width, b.width].min
+    width = [a.width, b.width].min
     height = [a.height, b.height].min
 
     diff = 0
@@ -129,4 +133,3 @@ module VisualHelpers
     diff
   end
 end
-

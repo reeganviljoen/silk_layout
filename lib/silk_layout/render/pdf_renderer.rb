@@ -8,13 +8,13 @@ module SilkLayout
       CSS_DPI = 96.0
       PDF_DPI = 72.0
 
-      PAGE_WIDTH_PX  = 800
+      PAGE_WIDTH_PX = 800
       PAGE_HEIGHT_PX = 1000
 
       def self.render(box_tree, output_path)
         doc = HexaPDF::Document.new
 
-        page_width_pt  = px_to_pt(PAGE_WIDTH_PX)
+        page_width_pt = px_to_pt(PAGE_WIDTH_PX)
         page_height_pt = px_to_pt(PAGE_HEIGHT_PX)
 
         page = doc.pages.add([0, 0, page_width_pt, page_height_pt])
@@ -43,7 +43,7 @@ module SilkLayout
 
       def self.render_text(canvas, box, page_height_pt)
         font_size_px = box.font_size || 16
-        font_name    = box.font_family || "Helvetica"
+        font_name = box.font_family || "Helvetica"
 
         font_size_pt = px_to_pt(font_size_px)
 
@@ -117,11 +117,11 @@ module SilkLayout
         return unless color
 
         case color
-        when :red   then canvas.fill_color(1, 0, 0)
+        when :red then canvas.fill_color(1, 0, 0)
         when :green then canvas.fill_color(0, 1, 0)
-        when :blue  then canvas.fill_color(0, 0, 1)
+        when :blue then canvas.fill_color(0, 0, 1)
         when :black then canvas.fill_color(0, 0, 0)
-          canvas.fill_color(1,1, 1)
+        when :white then canvas.fill_color(1, 1, 1)
         end
         canvas
       end
@@ -136,4 +136,3 @@ module SilkLayout
     end
   end
 end
-

@@ -10,7 +10,7 @@ module SilkLayout
         matching = rules.select { |rule| rule.selector.match?(node) }
         matching.sort_by! { |rule| [rule.specificity, rule.order] }
 
-        node.computed_style = ComputedStyle.new(matching, parent_style)
+        node.computed_style = ComputedStyle.new(matching, parent_style, node.tag)
 
         node.children.each do |child|
           apply(child, rules, node.computed_style)

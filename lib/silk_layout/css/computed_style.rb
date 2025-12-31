@@ -3,7 +3,7 @@
 module SilkLayout
   module CSS
     class ComputedStyle
-      def initialize(rules, parent_style = nil)
+      def initialize(rules, parent_style = nil, node_tag = nil)
         @values = {}
 
         rules.each do |rule|
@@ -13,6 +13,7 @@ module SilkLayout
         end
 
         apply_inheritance(parent_style)
+        apply_html_element_defaults(node_tag)
         apply_defaults
       end
 
@@ -41,6 +42,16 @@ module SilkLayout
 
       def apply_defaults
         Properties::DEFAULTS.each do |prop, value|
+          @values[prop] ||= value
+        end
+      end
+
+      def apply_html_element_defaults(node_tag)
+        return unless node_tag
+        return unless Properties::HTML_ELEMENT_DEFAULTS.key?(node_tag)
+
+        element_defaults = Properties::HTML_ELEMENT_DEFAULTS[node_tag]
+        element_defaults.each do |prop, value|
           @values[prop] ||= value
         end
       end

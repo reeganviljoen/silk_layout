@@ -4,8 +4,6 @@ module SilkLayout
   module Layout
     class BlockLayout
       LINE_HEIGHT = 16
-      DEFAULT_PADDING = 8
-      DEFAULT_LINE_HEIGHT = 16
 
       def self.layout(box, context, cursor_y = 0, parent_x = 0, containing_width = nil)
         box.x = parent_x + box.margin[:left]
@@ -111,13 +109,6 @@ module SilkLayout
         line
       end
 
-      def self.has_text?(node)
-        return false unless node
-        return true if node.text
-
-        node.children.any? { |c| has_text?(c) }
-      end
-
       def self.measure_text(box)
         case box
         when TextBox
@@ -130,8 +121,6 @@ module SilkLayout
       end
 
       private_class_method :layout_inline, :measure_text
-
-      private_class_method :has_text?
     end
   end
 end

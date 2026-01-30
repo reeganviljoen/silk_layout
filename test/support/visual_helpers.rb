@@ -132,7 +132,15 @@ module VisualHelpers
         pdf_path,
         out_base
       )
-      return if ok && File.exist?(png_path)
+      if ok
+        return if File.exist?(png_path)
+
+        alt_path = "#{out_base}-1.png"
+        if File.exist?(alt_path)
+          FileUtils.mv(alt_path, png_path)
+          return
+        end
+      end
     end
 
     if magick_available

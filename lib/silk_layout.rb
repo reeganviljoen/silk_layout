@@ -15,6 +15,7 @@ module SilkLayout
     autoload :Cascade, "silk_layout/css/cascade"
     autoload :ComputedStyle, "silk_layout/css/computed_style"
     autoload :Rule, "silk_layout/css/rule"
+    autoload :Declaration, "silk_layout/css/rule"
     autoload :Selector, "silk_layout/css/selector"
     autoload :Properties, "silk_layout/css/properties"
   end

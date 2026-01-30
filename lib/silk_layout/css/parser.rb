@@ -24,7 +24,7 @@ module SilkLayout
               property = child[:name]
               value = child[:value]
 
-              declarations[property] = value
+              declarations[property] = Declaration.new(value: value, important: child[:important] ? true : false)
             end
 
             selectors.each do |raw_selector|
@@ -34,7 +34,8 @@ module SilkLayout
                 selector: selector,
                 declarations: declarations,
                 specificity: selector.specificity,
-                order: order
+                order: order,
+                origin: :author
               )
 
               order += 1

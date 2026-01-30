@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page {
+        size: 800px 1000px;
+        margin: 0;
+      }
+
+      html, body {
+        width: 800px;
+        height: 1000px;
+        margin: 0;
+        padding: 0;
+        font-family: Helvetica;
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .wrapper {
+        display: block;
+        width: 420px;
+        padding: 12px;
+        border-style: solid;
+        border-width: 4px;
+        border-color: black;
+      }
+
+      p {
+        display: block;
+        padding: 10px;
+        border-style: solid;
+        border-width: 6px;
+        border-color: red;
+        font-size: 22px;
+      }
+
+      /* Descendant overrides base (later order). */
+      div.wrapper p {
+        border-color: green;
+      }
+
+      /* Child selector overrides descendant (later order). */
+      div.wrapper > p {
+        border-color: blue;
+      }
+
+      /* Compound selector overrides all for the target. */
+      div.wrapper > p#target.highlight {
+        border-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <p id="target" class="highlight">Target</p>
+      <div>
+        <p>Nested</p>
+      </div>
+    </div>
+  </body>
+</html>

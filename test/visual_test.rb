@@ -13,7 +13,12 @@ class VisualRegressionTest < Minitest::Test
     "base_href_filesystem" => 1500,
     "remote_stylesheet_redirect" => 1500,
     "remote_stylesheet_import" => 2000,
-    "solid_borders_multicolor" => 3000
+    "solid_borders_multicolor" => 3000,
+
+    # Phase 1: cascade/selectors/default display scenarios
+    "inline_style_attribute" => 2000,
+    "selector_combinators" => 3000,
+    "ua_default_display" => 5000
   }.freeze
 
   def setup

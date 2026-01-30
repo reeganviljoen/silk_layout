@@ -7,12 +7,7 @@ module SilkLayout
         @values = {}
         @explicit_properties = {}
 
-        rules.each do |rule|
-          rule.declarations.each do |property, value|
-            @values[property] = value
-            @explicit_properties[property] = true
-          end
-        end
+        apply_rules(rules)
 
         apply_inheritance(parent_style)
         apply_defaults
@@ -36,6 +31,34 @@ module SilkLayout
       end
 
       private
+
+      INLINE_SPECIFICITY = [1000, 0, 0].freeze
+
+      def apply_rules(rules)
+        winners = {}
+
+        rules.each do |rule|
+          spec = rule.specificity || INLINE_SPECIFICITY
+          order = rule.order || 0
+
+          rule.declarations.each do |property, decl|
+            value = decl.is_a?(Declaration) ? decl.value : decl
+            important = decl.is_a?(Declaration) ? decl.important : false
+
+            key = [important ? 1 : 0, spec, order]
+            current = winners[property]
+
+            if current.nil? || (key <=> current[:key]) == 1
+              winners[property] = {key: key, value: value}
+              @explicit_properties[property] = true
+            end
+          end
+        end
+
+        winners.each do |prop, data|
+          @values[prop] = data[:value]
+        end
+      end
 
       def apply_inheritance(parent)
         return unless parent

@@ -12,15 +12,6 @@ module SilkLayout
         Node.from_nokogiri(document.root)
       end
 
-      # Parses a full HTML document string and extracts CSS like a browser would.
-      #
-      # - Inline: <style> ... </style>
-      # - Linked: <link rel="stylesheet" href="...">
-      #
-      # `url:` is the document URL used to resolve relative stylesheet hrefs.
-      # If omitted, it defaults to the current working directory as a file:// URL.
-      #
-      # Returns [dom_root, stylesheets]
       def self.parse_document(html, url: nil)
         document = Nokogiri::HTML(html)
 
@@ -71,11 +62,9 @@ module SilkLayout
         uri = URI.parse(url.to_s)
         return uri if uri.scheme
 
-        # Treat scheme-less input as a filesystem path
         path = Pathname.new(url.to_s).expand_path
         file_uri_for(path)
       rescue URI::InvalidURIError
-        # Fall back to treating it as a filesystem path
         path = Pathname.new(url.to_s).expand_path
         file_uri_for(path)
       end
@@ -88,7 +77,6 @@ module SilkLayout
         p = path
         p = p.dirname if p.file?
 
-        # Ensure trailing slash so URI.join treats it as a directory
         dir = p.to_s
         dir = "#{dir}/" unless dir.end_with?("/")
 
@@ -159,8 +147,6 @@ module SilkLayout
         end
       end
 
-      # Very small @import implementation so linked stylesheets behave more like a browser.
-      # We inline imported CSS so the existing CSS parser can ignore @import lines.
       def self.inline_css_imports(css, stylesheet_uri, cache)
         return css unless css.include?("@import")
 

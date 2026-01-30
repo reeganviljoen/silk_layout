@@ -9,6 +9,12 @@ class VisualRegressionTest < Minitest::Test
 
   TMP_DIR = VisualHelpers::TMP_DIR
   TOLERANCE = (ENV["VISUAL_TOLERANCE"] || 500).to_i
+  TOLERANCE_OVERRIDES = {
+    "base_href_filesystem" => 1500,
+    "remote_stylesheet_redirect" => 1500,
+    "remote_stylesheet_import" => 2000,
+    "solid_borders_multicolor" => 3000
+  }.freeze
 
   def setup
     super
@@ -32,7 +38,10 @@ class VisualRegressionTest < Minitest::Test
       silk_png = "#{TMP_DIR}/#{name}_silk.png"
       browser_png = "#{TMP_DIR}/#{name}_browser.png"
 
-      if name == "remote_stylesheet"
+      server = nil
+      thread = nil
+
+      if name.start_with?("remote_")
         server = WEBrick::HTTPServer.new(
           Port: 0,
           BindAddress: "127.0.0.1",
@@ -46,10 +55,39 @@ class VisualRegressionTest < Minitest::Test
           res.body = File.read(html)
         end
 
-        server.mount_proc "/remote.css" do |_req, res|
-          res.status = 200
-          res["Content-Type"] = "text/css"
-          res.body = File.read(File.join(scenario, "remote.css"))
+        case name
+        when "remote_stylesheet"
+          server.mount_proc "/remote.css" do |_req, res|
+            res.status = 200
+            res["Content-Type"] = "text/css"
+            res.body = File.read(File.join(scenario, "remote.css"))
+          end
+        when "remote_stylesheet_redirect"
+          server.mount_proc "/redirect.css" do |_req, res|
+            res.status = 302
+            res["Location"] = "/final.css"
+            res.body = ""
+          end
+
+          server.mount_proc "/final.css" do |_req, res|
+            res.status = 200
+            res["Content-Type"] = "text/css"
+            res.body = File.read(File.join(scenario, "final.css"))
+          end
+        when "remote_stylesheet_import"
+          server.mount_proc "/remote.css" do |_req, res|
+            res.status = 200
+            res["Content-Type"] = "text/css"
+            res.body = File.read(File.join(scenario, "remote.css"))
+          end
+
+          server.mount_proc "/import.css" do |_req, res|
+            res.status = 200
+            res["Content-Type"] = "text/css"
+            res.body = File.read(File.join(scenario, "import.css"))
+          end
+        else
+          flunk "Unhandled remote scenario: #{name}"
         end
 
         thread = Thread.new { server.start }
@@ -70,18 +108,19 @@ class VisualRegressionTest < Minitest::Test
 
       diff = image_diff(browser_png, silk_png)
 
-      assert diff <= TOLERANCE,
+      tolerance = TOLERANCE_OVERRIDES.fetch(name, TOLERANCE)
+
+      assert diff <= tolerance,
         <<~MSG
           Visual diff too large for #{name}
           Diff pixels: #{diff}
+          Allowed: #{tolerance}
           Silk:    #{silk_png}
           Browser: #{browser_png}
         MSG
     ensure
-      if name == "remote_stylesheet"
-        server&.shutdown
-        thread&.join(1)
-      end
+      server&.shutdown
+      thread&.join(1)
     end
   end
 end

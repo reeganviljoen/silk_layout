@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
-require "nokogiri"
 require "net/http"
+require "nokogiri"
 require "uri"
 
 module SilkLayout
   module HTML
     class Parser
-      def self.parse(html)
-        document = Nokogiri::HTML(html)
-        Node.from_nokogiri(document.root)
-      end
-
       def self.parse_document(html, url: nil)
         document = Nokogiri::HTML(html)
 
@@ -152,11 +147,13 @@ module SilkLayout
 
         base = stylesheet_base_uri(stylesheet_uri)
         remaining = css.dup
-        inlined = ""
+        inlined = +""
         seen = {}
 
         20.times do
-          m = remaining.match(/@import\s+(?:url\()?\s*['"]?([^'")\s;]+)['"]?\s*\)?\s*;/i)
+          m = remaining.match(/@import\s+(?:url\()?
+            \s*['"]?([^'")\s;]+)['"]?
+            \s*\)?\s*;/ix)
           break unless m
 
           href = m[1]

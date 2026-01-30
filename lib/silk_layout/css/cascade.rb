@@ -16,11 +16,6 @@ module SilkLayout
           apply(child, rules, node.computed_style)
         end
       end
-
-      def self.traverse(node, &block)
-        yield node
-        node.children.each { |child| traverse(child, &block) }
-      end
     end
   end
 end

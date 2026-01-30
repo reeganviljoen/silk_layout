@@ -21,10 +21,9 @@ module SilkLayout
 
   module Layout
     autoload :Box, "silk_layout/layout/box"
-    autoload :Block, "silk_layout/layout/block"
-    autoload :BlockBox, "silk_layout/layout/block"
-    autoload :InlineBox, "silk_layout/layout/block"
-    autoload :AnonymousBlockBox, "silk_layout/layout/block"
+    autoload :BlockBox, "silk_layout/layout/box"
+    autoload :InlineBox, "silk_layout/layout/box"
+    autoload :AnonymousBlockBox, "silk_layout/layout/box"
     autoload :Inline, "silk_layout/layout/inline"
     autoload :TextBox, "silk_layout/layout/inline"
     autoload :LineBox, "silk_layout/layout/inline"
@@ -37,14 +36,6 @@ module SilkLayout
 
   module Render
     autoload :PdfRenderer, "silk_layout/render/pdf_renderer"
-  end
-
-  def self.render(html, css, out)
-    dom = SilkLayout::HTML::Parser.parse(html)
-    rules = SilkLayout::CSS::Parser.parse_all([css])
-    box_tree = SilkLayout::Layout::Engine.layout(dom, rules)
-
-    SilkLayout::Render::PdfRenderer.render(box_tree, out)
   end
 
   def self.render_document(html_document, out, url: nil)

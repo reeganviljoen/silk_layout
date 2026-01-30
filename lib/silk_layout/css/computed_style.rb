@@ -5,10 +5,12 @@ module SilkLayout
     class ComputedStyle
       def initialize(rules, parent_style = nil)
         @values = {}
+        @explicit_properties = {}
 
         rules.each do |rule|
           rule.declarations.each do |property, value|
             @values[property] = value
+            @explicit_properties[property] = true
           end
         end
 
@@ -27,6 +29,10 @@ module SilkLayout
       def explicit_width?
         value = @values["width"]
         value && value != "auto"
+      end
+
+      def explicit_display?
+        @explicit_properties.key?("display")
       end
 
       private

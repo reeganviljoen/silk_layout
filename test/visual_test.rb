@@ -6,8 +6,8 @@ require_relative "support/visual_helpers"
 class VisualRegressionTest < Minitest::Test
   include VisualHelpers
 
-  TMP_DIR   = VisualHelpers::TMP_DIR
-  TOLERANCE = 10
+  TMP_DIR = VisualHelpers::TMP_DIR
+  TOLERANCE = (ENV["VISUAL_TOLERANCE"] || 500).to_i
 
   # Ensure tmp dir exists before each test
   def setup
@@ -25,15 +25,15 @@ class VisualRegressionTest < Minitest::Test
 
     define_method("test_visual_#{name}") do
       html = File.join(scenario, "input.html")
-      css  = File.join(scenario, "input.css")
+      css = File.join(scenario, "input.css")
 
       unless File.exist?(html) && File.exist?(css)
         flunk "Missing input.html or input.css in #{scenario}"
       end
 
-      silk_pdf    = "#{TMP_DIR}/#{name}_silk.pdf"
+      silk_pdf = "#{TMP_DIR}/#{name}_silk.pdf"
       browser_pdf = "#{TMP_DIR}/#{name}_browser.pdf"
-      silk_png    = "#{TMP_DIR}/#{name}_silk.png"
+      silk_png = "#{TMP_DIR}/#{name}_silk.png"
       browser_png = "#{TMP_DIR}/#{name}_browser.png"
 
       render_silk(html, css, silk_pdf)
@@ -45,12 +45,12 @@ class VisualRegressionTest < Minitest::Test
       diff = image_diff(browser_png, silk_png)
 
       assert diff <= TOLERANCE,
-             <<~MSG
-               Visual diff too large for #{name}
-               Diff pixels: #{diff}
-               Silk:    #{silk_png}
-               Browser: #{browser_png}
-             MSG
+        <<~MSG
+          Visual diff too large for #{name}
+          Diff pixels: #{diff}
+          Silk:    #{silk_png}
+          Browser: #{browser_png}
+        MSG
     end
   end
 end

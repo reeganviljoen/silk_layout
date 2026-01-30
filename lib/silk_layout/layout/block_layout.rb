@@ -6,13 +6,11 @@ module SilkLayout
       LINE_HEIGHT = 16
       DEFAULT_PADDING = 8
       DEFAULT_LINE_HEIGHT = 16
-      
 
-      def self.layout(box, context, cursor_y = 0, parent_x = 0)
+      def self.layout(box, context, cursor_y = 0, parent_x = 0, containing_width = nil)
         # --- Position this box (margin applies outside)
         box.x = parent_x + box.margin[:left]
         box.y = cursor_y + box.margin[:top]
-
 
         # --- Content box origin
         content_x =
@@ -22,13 +20,16 @@ module SilkLayout
           box.y + box.border[:top] + box.padding[:top]
 
         # --- Determine content width
+        available_width = containing_width || context.width
         if box.explicit_width
+          content_width = box.width
+        else
           content_width =
-            box.width -
+            available_width -
+            box.margin[:left] - box.margin[:right] -
             box.border[:left] - box.border[:right] -
             box.padding[:left] - box.padding[:right]
-        else
-          content_width = 0 # will grow based on children
+          content_width = 0 if content_width < 0
         end
 
         current_y = content_y
@@ -52,7 +53,7 @@ module SilkLayout
           end
 
           # --- Layout block child
-          layout(child, context, current_y, content_x)
+          layout(child, context, current_y, content_x, content_width)
 
           current_y +=
             child.height +
@@ -77,15 +78,15 @@ module SilkLayout
         content_height = current_y - content_y
 
         # --- Auto-width boxes grow to fit children
-        unless box.explicit_width
-          max_child_width =
-            box.children.map(&:width).max || 0
+        max_child_width =
+          box.children.map(&:width).max || 0
 
-          box.width =
-            max_child_width +
-            box.padding[:left] + box.padding[:right] +
-            box.border[:left] + box.border[:right]
-        end
+        content_width = max_child_width if !box.explicit_width && content_width == 0
+
+        box.width =
+          content_width +
+          box.padding[:left] + box.padding[:right] +
+          box.border[:left] + box.border[:right]
 
         # --- Final box height includes padding + border
         box.height =
@@ -93,7 +94,7 @@ module SilkLayout
           box.padding[:top] + box.padding[:bottom] +
           box.border[:top] + box.border[:bottom]
       end
-     
+
       def self.layout_inline(inline_children, context, parent_x, parent_y)
         line = LineBox.new
         cursor_x = 0
@@ -109,14 +110,13 @@ module SilkLayout
               LINE_HEIGHT
             end
 
-
           cursor_x += child.width
           line.add_child(child)
         end
 
         line.width = cursor_x
         line.height = inline_children.map(&:height).max || LINE_HEIGHT
-        
+
         line
       end
 
@@ -126,8 +126,7 @@ module SilkLayout
 
         node.children.any? { |c| has_text?(c) }
       end
-      
-      
+
       def self.measure_text(box)
         case box
         when TextBox

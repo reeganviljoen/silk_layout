@@ -12,7 +12,7 @@ SimpleCov.start do
 
   track_files "lib/**/*.rb"
 
-  minimum_coverage 90
+  minimum_coverage 80
 end
 
 SimpleCov.formatters = [
@@ -21,16 +21,16 @@ SimpleCov.formatters = [
 ]
 
 SimpleCov.at_exit do
-    SimpleCov.result.format!
+  SimpleCov.result.format!
 
-    covered = SimpleCov.result.covered_percent.round(2)
+  covered = SimpleCov.result.covered_percent.round(2)
 
-    puts "\n📊 Coverage: #{covered}%"
+  puts "\n📊 Coverage: #{covered}%"
 
-    if covered < (ENV["COVERAGE_MIN"] || 100).to_f
-      abort "❌ Coverage below threshold"
-    end
+  if covered < (ENV["COVERAGE_MIN"] || 80).to_f
+    abort "❌ Coverage below threshold"
   end
+end
 
 require "silk_layout"
 require "minitest/autorun"

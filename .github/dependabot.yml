@@ -1,18 +1,12 @@
 version: 2
 
 updates:
-  - package-ecosystem: bundler
+  - package-ecosystem: "bundler"
     directory: "/"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    labels:
-      - dependencies
+      interval: "daily"
 
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    labels:
-      - dependencies
+      interval: daily

@@ -4,6 +4,7 @@ require "silk_layout"
 require "ferrum"
 require "chunky_png"
 require "fileutils"
+require "open3"
 require "securerandom"
 require "tmpdir"
 
@@ -77,6 +78,7 @@ module VisualHelpers
       headless: true,
       window_size: VIEWPORT,
       browser_path: ENV["BROWSER_PATH"] || ENV["CHROME_PATH"] || ENV["CHROME_BIN"],
+      process_timeout: (ENV["FERRUM_PROCESS_TIMEOUT"] || 30).to_i,
       browser_options: {
         "no-sandbox" => nil,
         "disable-dev-shm-usage" => nil,
@@ -114,18 +116,53 @@ module VisualHelpers
   def pdf_to_png(pdf_path, png_path)
     FileUtils.mkdir_p(File.dirname(png_path))
 
+    unless File.exist?(pdf_path) && File.size(pdf_path).to_i > 0
+      raise "PDF missing or empty: #{pdf_path}"
+    end
+
     # 72 DPI is CRITICAL:
     # 1 CSS px = 1 pt at 96 DPI → convert down for pixel match
-    magick_available = system("command", "-v", "magick", out: File::NULL, err: File::NULL)
-    convert_available = system("command", "-v", "convert", out: File::NULL, err: File::NULL)
-    pdftoppm_available = system("command", "-v", "pdftoppm", out: File::NULL, err: File::NULL)
-    sips_available = system("command", "-v", "sips", out: File::NULL, err: File::NULL)
+    magick_available = command_available?("magick")
+    convert_available = command_available?("convert")
+    pdftocairo_available = command_available?("pdftocairo")
+    pdftoppm_available = command_available?("pdftoppm")
+    sips_available = command_available?("sips")
+
+    if pdftocairo_available
+      out_base = png_path.delete_suffix(".png")
+      ok, stderr = run_cmd(
+        "pdftocairo",
+        "-f",
+        "1",
+        "-l",
+        "1",
+        "-r",
+        "72",
+        "-png",
+        "-singlefile",
+        pdf_path,
+        out_base
+      )
+
+      if ok
+        return if File.exist?(png_path)
+
+        alt_path = "#{out_base}-1.png"
+        if File.exist?(alt_path)
+          FileUtils.mv(alt_path, png_path)
+          return
+        end
+      end
+
+      @last_pdf_to_png_error = "pdftocairo: #{stderr}".strip
+    end
 
     if pdftoppm_available
       out_base = png_path.delete_suffix(".png")
-      ok = system(
+      ok, stderr = run_cmd(
         "pdftoppm",
         "-f", "1",
+        "-l", "1",
         "-singlefile",
         "-r", "72",
         "-png",
@@ -141,39 +178,56 @@ module VisualHelpers
           return
         end
       end
+
+      @last_pdf_to_png_error = "pdftoppm: #{stderr}".strip
     end
 
     if magick_available
-      ok = system(
+      ok, stderr = run_cmd(
         "magick",
         "-density", "72",
         "#{pdf_path}[0]",
         png_path
       )
       return if ok
+
+      @last_pdf_to_png_error = "magick: #{stderr}".strip
     end
 
     if convert_available
-      ok = system(
+      ok, stderr = run_cmd(
         "convert",
         "-density", "72",
         "#{pdf_path}[0]",
         png_path
       )
       return if ok
+
+      @last_pdf_to_png_error = "convert: #{stderr}".strip
     end
 
     if sips_available
-      ok = system(
+      ok, stderr = run_cmd(
         "sips",
         "-s", "format", "png",
         pdf_path,
         "--out", png_path
       )
       return if ok
+
+      @last_pdf_to_png_error = "sips: #{stderr}".strip
     end
 
-    raise "PDF to PNG conversion failed"
+    raise "PDF to PNG conversion failed (#{@last_pdf_to_png_error})"
+  end
+
+  def command_available?(name)
+    system("command", "-v", name, out: File::NULL, err: File::NULL)
+  end
+
+  def run_cmd(*args)
+    stdout, stderr, status = Open3.capture3(*args)
+    [status.success?, [stdout, stderr].reject(&:empty?).join("\n").strip]
   end
 
   # ----------------------------

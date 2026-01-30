@@ -57,26 +57,6 @@ module SilkLayout
       def border_box_height
         height
       end
-
-      def content_box_x
-        x + border[:left] + padding[:left]
-      end
-
-      def content_box_y
-        y + border[:top] + padding[:top]
-      end
-
-      def content_box_width
-        width -
-          border[:left] - border[:right] -
-          padding[:left] - padding[:right]
-      end
-
-      def content_box_height
-        height -
-          border[:top] - border[:bottom] -
-          padding[:top] - padding[:bottom]
-      end
     end
 
     class BlockBox < Box; end

@@ -1,0 +1,13 @@
+.card {
+  display: block;
+  width: 360px;
+  padding: 16px;
+  border-style: solid;
+  border-width: 6px;
+  border-color: blue;
+}
+
+p {
+  display: block;
+  font-size: 22px;
+}

@@ -11,7 +11,7 @@ module SilkLayout
         super(nil)
         @text = text
 
-        @font_size   = px(style["font-size"]) || 16
+        @font_size = px(style["font-size"]) || 16
         @font_family = style["font-family"] || "Helvetica"
         @font_weight = style["font-weight"] || "normal"
 

@@ -1,0 +1,74 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: StandardRB
+        run: bundle exec standardrb
+
+  test:
+    name: test (Ruby ${{ matrix.ruby }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.2", "3.3", "3.4", "4.0"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick ghostscript poppler-utils
+
+      - name: Diagnostics (PDF conversion)
+        run: |
+          which pdftocairo || true
+          pdftocairo -v || true
+          which pdftoppm || true
+          pdftoppm -v || true
+          which magick || true
+          which convert || true
+          dpkg -l | egrep 'poppler|ghostscript|imagemagick' || true
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        env:
+          COVERAGE_MIN: "80"
+          BROWSER_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: bundle exec rake test
+
+      - name: Upload visual artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-artifacts-ruby-${{ matrix.ruby }}
+          path: tmp/visual

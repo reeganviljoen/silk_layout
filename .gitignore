@@ -5,3 +5,6 @@ tmp/visual/
 .ruby-lsp/
 #coverage
 coverage/
+
+# macOS
+.DS_Store

@@ -75,7 +75,13 @@ module VisualHelpers
 
     browser = Ferrum::Browser.new(
       headless: true,
-      window_size: VIEWPORT
+      window_size: VIEWPORT,
+      browser_path: ENV["BROWSER_PATH"] || ENV["CHROME_PATH"] || ENV["CHROME_BIN"],
+      browser_options: {
+        "no-sandbox" => nil,
+        "disable-dev-shm-usage" => nil,
+        "disable-gpu" => nil
+      }
     )
 
     page = browser.create_page
@@ -115,6 +121,20 @@ module VisualHelpers
     pdftoppm_available = system("command", "-v", "pdftoppm", out: File::NULL, err: File::NULL)
     sips_available = system("command", "-v", "sips", out: File::NULL, err: File::NULL)
 
+    if pdftoppm_available
+      out_base = png_path.delete_suffix(".png")
+      ok = system(
+        "pdftoppm",
+        "-f", "1",
+        "-singlefile",
+        "-r", "72",
+        "-png",
+        pdf_path,
+        out_base
+      )
+      return if ok && File.exist?(png_path)
+    end
+
     if magick_available
       ok = system(
         "magick",
@@ -133,20 +153,6 @@ module VisualHelpers
         png_path
       )
       return if ok
-    end
-
-    if pdftoppm_available
-      out_base = png_path.delete_suffix(".png")
-      ok = system(
-        "pdftoppm",
-        "-f", "1",
-        "-singlefile",
-        "-r", "72",
-        "-png",
-        pdf_path,
-        out_base
-      )
-      return if ok && File.exist?(png_path)
     end
 
     if sips_available

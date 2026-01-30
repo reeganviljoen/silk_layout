@@ -27,15 +27,17 @@ jobs:
   test:
     name: test (Ruby ${{ matrix.ruby }})
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.ruby == 'head' }}
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4"]
+        ruby: ["3.2", "3.3", "3.4", "4.0", "head"]
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Chrome
+        id: chrome
         uses: browser-actions/setup-chrome@v1
 
       - name: Install system dependencies
@@ -52,6 +54,7 @@ jobs:
       - name: Run tests
         env:
           COVERAGE_MIN: "80"
+          BROWSER_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: bundle exec rake test
 
       - name: Upload visual artifacts

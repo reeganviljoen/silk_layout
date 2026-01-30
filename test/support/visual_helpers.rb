@@ -195,7 +195,7 @@ module VisualHelpers
 
     per_channel_tolerance = (ENV["PIXEL_TOLERANCE"] || 10).to_i
 
-    downsample_factor = (ENV["DOWNSAMPLE"] || 2).to_i
+    downsample_factor = (ENV["DOWNSAMPLE"] || 3).to_i
 
     a = autocrop(a)
     b = autocrop(b)

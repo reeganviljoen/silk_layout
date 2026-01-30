@@ -67,9 +67,6 @@ module SilkLayout
             BlockBox.new(node)
           end
 
-        # ----------------------------
-        # Width handling
-        # ----------------------------
         if style.respond_to?(:explicit_width?) && style.explicit_width?
           box.explicit_width = true
           box.width = px(style["width"])
@@ -77,9 +74,6 @@ module SilkLayout
           box.explicit_width = false
         end
 
-        # ----------------------------
-        # Margin
-        # ----------------------------
         box.margin = {
           top: px(style["margin-top"] || style["margin"]),
           right: px(style["margin-right"] || style["margin"]),
@@ -87,9 +81,6 @@ module SilkLayout
           left: px(style["margin-left"] || style["margin"])
         }
 
-        # ----------------------------
-        # Padding
-        # ----------------------------
         box.padding = {
           top: px(style["padding-top"] || style["padding"]),
           right: px(style["padding-right"] || style["padding"]),
@@ -97,9 +88,6 @@ module SilkLayout
           left: px(style["padding-left"] || style["padding"])
         }
 
-        # ----------------------------
-        # Border widths
-        # ----------------------------
         border_styles = {
           top: style["border-top-style"] || style["border-style"] || "none",
           right: style["border-right-style"] || style["border-style"] || "none",
@@ -118,13 +106,8 @@ module SilkLayout
           box.border[side] = 0 if border_styles[side] == "none"
         end
 
-        # Border exists if ANY side has width
         box.has_border = box.border.values.any? { |v| v > 0 }
 
-        # ----------------------------
-        # Border colors
-        # ----------------------------
-        # CSS default: black if border exists and color not specified
         default_color = box.has_border ? :black : nil
 
         box.border_color = {

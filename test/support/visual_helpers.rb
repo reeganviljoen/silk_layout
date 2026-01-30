@@ -218,11 +218,18 @@ module VisualHelpers
       @last_pdf_to_png_error = "sips: #{stderr}".strip
     end
 
+    if !pdftocairo_available && !pdftoppm_available && !magick_available && !convert_available && !sips_available
+      raise "PDF to PNG conversion failed (no converters found in PATH)"
+    end
+
     raise "PDF to PNG conversion failed (#{@last_pdf_to_png_error})"
   end
 
   def command_available?(name)
-    system("command", "-v", name, out: File::NULL, err: File::NULL)
+    ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).any? do |dir|
+      path = File.join(dir, name)
+      File.file?(path) && File.executable?(path)
+    end
   end
 
   def run_cmd(*args)

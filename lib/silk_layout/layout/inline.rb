@@ -5,7 +5,7 @@ module SilkLayout
     class Inline < Box; end
 
     class TextBox < InlineBox
-      attr_reader :text, :font_size, :font_family, :font_weight, :line_height
+      attr_reader :text, :font_size, :font_family, :font_weight, :line_height, :color
 
       def initialize(text, style)
         super(nil)
@@ -15,7 +15,9 @@ module SilkLayout
         @font_family = style["font-family"] || "Helvetica"
         @font_weight = style["font-weight"] || "normal"
 
-        @line_height = (@font_size * 1.2).ceil
+        @color = style["color"] || "black"
+
+        @line_height = (@font_size * 1.2).round
       end
 
       def children

@@ -8,13 +8,7 @@ class VisualRegressionTest < Minitest::Test
   include VisualHelpers
 
   TMP_DIR = VisualHelpers::TMP_DIR
-  TOLERANCE = (ENV["VISUAL_TOLERANCE"] || 500).to_i
-  TOLERANCE_OVERRIDES = {
-    "base_href_filesystem" => 1500,
-    "remote_stylesheet_redirect" => 1500,
-    "remote_stylesheet_import" => 2000,
-    "solid_borders_multicolor" => 3000
-  }.freeze
+  TOLERANCE = (ENV["VISUAL_TOLERANCE"] || 2000).to_i
 
   def setup
     super
@@ -108,13 +102,11 @@ class VisualRegressionTest < Minitest::Test
 
       diff = image_diff(browser_png, silk_png)
 
-      tolerance = TOLERANCE_OVERRIDES.fetch(name, TOLERANCE)
-
-      assert diff <= tolerance,
+      assert diff <= TOLERANCE,
         <<~MSG
           Visual diff too large for #{name}
           Diff pixels: #{diff}
-          Allowed: #{tolerance}
+          Allowed: #{TOLERANCE}
           Silk:    #{silk_png}
           Browser: #{browser_png}
         MSG

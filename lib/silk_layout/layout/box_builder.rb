@@ -6,10 +6,33 @@ module SilkLayout
       DEFAULT_DISPLAY = {
         "html" => "block",
         "head" => "none",
+        "meta" => "none",
+        "title" => "none",
+        "link" => "none",
+        "style" => "none",
+        "script" => "none",
         "body" => "block",
         "div" => "block",
         "p" => "block",
-        "span" => "inline"
+        "span" => "inline",
+        "a" => "inline",
+        "strong" => "inline",
+        "em" => "inline",
+        "br" => "inline",
+        "h1" => "block",
+        "h2" => "block",
+        "h3" => "block",
+        "h4" => "block",
+        "h5" => "block",
+        "h6" => "block",
+        "ul" => "block",
+        "ol" => "block",
+        "li" => "block",
+        "section" => "block",
+        "header" => "block",
+        "footer" => "block",
+        "nav" => "block",
+        "article" => "block"
       }.freeze
 
       def self.build(dom_root)

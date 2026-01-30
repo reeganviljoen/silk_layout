@@ -23,28 +23,27 @@
         padding: 0;
       }
 
-      /* ID selector under test */
-      #card {
-        width: 360px;
-        padding: 16px;
+      h1 {
         border-style: solid;
-        border-width: 3px;
-        border-color: black;
-        display: block;
+        border-width: 6px;
+        border-color: red;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: normal;
       }
 
-      /* Element selectors */
       p {
         display: block;
-        margin-bottom: 8px;
+        border-style: solid;
+        border-width: 6px;
+        border-color: blue;
+        padding: 10px;
         font-size: 16px;
       }
     </style>
   </head>
   <body>
-    <div id="card">
-      <p>Title</p>
-      <p>Body text</p>
-    </div>
+    <h1>Block by default</h1>
+    <p>Also block</p>
   </body>
 </html>

@@ -23,28 +23,25 @@
         padding: 0;
       }
 
-      /* ID selector under test */
-      #card {
+      .card {
+        display: block;
         width: 360px;
         padding: 16px;
         border-style: solid;
-        border-width: 3px;
+        border-width: 6px;
         border-color: black;
-        display: block;
       }
 
-      /* Element selectors */
+      /* This should beat the inline style below (which is not important). */
       p {
         display: block;
-        margin-bottom: 8px;
-        font-size: 16px;
+        font-size: 14px !important;
       }
     </style>
   </head>
   <body>
-    <div id="card">
-      <p>Title</p>
-      <p>Body text</p>
+    <div class="card">
+      <p style="font-size: 28px">Important wins</p>
     </div>
   </body>
 </html>

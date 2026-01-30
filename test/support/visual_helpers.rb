@@ -110,27 +110,56 @@ module VisualHelpers
 
     # 72 DPI is CRITICAL:
     # 1 CSS px = 1 pt at 96 DPI → convert down for pixel match
-    gs_available = system("command", "-v", "gs", out: File::NULL, err: File::NULL)
+    magick_available = system("command", "-v", "magick", out: File::NULL, err: File::NULL)
+    convert_available = system("command", "-v", "convert", out: File::NULL, err: File::NULL)
+    pdftoppm_available = system("command", "-v", "pdftoppm", out: File::NULL, err: File::NULL)
+    sips_available = system("command", "-v", "sips", out: File::NULL, err: File::NULL)
 
-    if gs_available
+    if magick_available
       ok = system(
         "magick",
         "-density", "72",
         "#{pdf_path}[0]",
         png_path
       )
-
       return if ok
     end
 
-    ok = system(
-      "sips",
-      "-s", "format", "png",
-      pdf_path,
-      "--out", png_path
-    )
+    if convert_available
+      ok = system(
+        "convert",
+        "-density", "72",
+        "#{pdf_path}[0]",
+        png_path
+      )
+      return if ok
+    end
 
-    raise "PDF to PNG conversion failed" unless ok
+    if pdftoppm_available
+      out_base = png_path.delete_suffix(".png")
+      ok = system(
+        "pdftoppm",
+        "-f", "1",
+        "-singlefile",
+        "-r", "72",
+        "-png",
+        pdf_path,
+        out_base
+      )
+      return if ok && File.exist?(png_path)
+    end
+
+    if sips_available
+      ok = system(
+        "sips",
+        "-s", "format", "png",
+        pdf_path,
+        "--out", png_path
+      )
+      return if ok
+    end
+
+    raise "PDF to PNG conversion failed"
   end
 
   # ----------------------------

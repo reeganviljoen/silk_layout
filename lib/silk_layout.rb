@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-  
-require 'active_support/all'
+
+require "active_support/all"
 
 module SilkLayout
   autoload :VERSION, "silk_layout/version"

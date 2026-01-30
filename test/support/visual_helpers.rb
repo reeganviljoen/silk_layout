@@ -19,61 +19,26 @@ module VisualHelpers
     FileUtils.mkdir_p(TMP_DIR)
   end
 
-  # ----------------------------
-  # SilkLayout rendering
-  # ----------------------------
-  def render_silk(html_path, css_path, out_pdf)
+  def render_silk(html_path, out_pdf)
     FileUtils.mkdir_p(File.dirname(out_pdf))
 
     html = File.read(html_path)
-    css = File.read(css_path)
-    SilkLayout.render(html, css, out_pdf)
+    url = "file://#{File.expand_path(html_path)}"
+    SilkLayout.render_document(html, out_pdf, url: url)
   end
 
-  # ----------------------------
-  # Browser rendering (Ferrum)
-  # ----------------------------
-  def render_browser(html_path, css_path, out_pdf)
-    html = File.read(html_path)
-    css = File.read(css_path)
+  def render_silk_document(html, out_pdf, url:)
+    FileUtils.mkdir_p(File.dirname(out_pdf))
+    SilkLayout.render_document(html, out_pdf, url: url)
+  end
 
-    tmp_html = File.join(Dir.tmpdir, "#{SecureRandom.hex}.html")
+  def render_browser(html_path, out_pdf)
+    url = "file://#{File.expand_path(html_path)}"
 
-    File.write(tmp_html, <<~HTML)
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8" />
-          <style>
-            @page {
-              size: #{VIEWPORT_WIDTH}px #{VIEWPORT_HEIGHT}px;
-              margin: 0;
-            }
+    render_browser_url(url, out_pdf)
+  end
 
-            html, body {
-              width: #{VIEWPORT_WIDTH}px;
-              height: #{VIEWPORT_HEIGHT}px;
-              margin: 0;
-              padding: 0;
-              font-family: Helvetica;
-              font-size: 16px;
-              line-height: 1.2;
-            }
-
-            * {
-              margin: 0;
-              padding: 0;
-            }
-
-            #{css}
-          </style>
-        </head>
-        <body>
-          #{html}
-        </body>
-      </html>
-    HTML
-
+  def render_browser_url(url, out_pdf)
     browser = Ferrum::Browser.new(
       headless: true,
       window_size: VIEWPORT,
@@ -87,11 +52,8 @@ module VisualHelpers
     )
 
     page = browser.create_page
-    page.go_to("file://#{tmp_html}")
+    page.go_to(url)
 
-    # IMPORTANT:
-    # Ferrum expects inches for paper size.
-    # CSS pixels → inches at 96 DPI
     page.pdf(
       path: out_pdf,
       print_background: true,
@@ -103,16 +65,8 @@ module VisualHelpers
     )
 
     browser.quit
-    begin
-      File.delete(tmp_html)
-    rescue
-      nil
-    end
   end
 
-  # ----------------------------
-  # PDF → PNG
-  # ----------------------------
   def pdf_to_png(pdf_path, png_path)
     FileUtils.mkdir_p(File.dirname(png_path))
 
@@ -120,8 +74,6 @@ module VisualHelpers
       raise "PDF missing or empty: #{pdf_path}"
     end
 
-    # 72 DPI is CRITICAL:
-    # 1 CSS px = 1 pt at 96 DPI → convert down for pixel match
     magick_available = command_available?("magick")
     convert_available = command_available?("convert")
     pdftocairo_available = command_available?("pdftocairo")
@@ -237,9 +189,6 @@ module VisualHelpers
     [status.success?, [stdout, stderr].reject(&:empty?).join("\n").strip]
   end
 
-  # ----------------------------
-  # Image diff
-  # ----------------------------
   def image_diff(a_path, b_path)
     a = ChunkyPNG::Image.from_file(a_path)
     b = ChunkyPNG::Image.from_file(b_path)
@@ -256,7 +205,6 @@ module VisualHelpers
       b = downsample(b, downsample_factor)
     end
 
-    # Crop both to smallest common area
     width = [a.width, b.width].min
     height = [a.height, b.height].min
 

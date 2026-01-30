@@ -1,0 +1,12 @@
+.card {
+  width: 360px;
+  padding: 16px;
+  border-width: 4px;
+  border-color: red;
+  display: block;
+}
+
+p {
+  display: block;
+  font-size: 24px;
+}

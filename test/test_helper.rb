@@ -25,10 +25,10 @@ SimpleCov.at_exit do
 
   covered = SimpleCov.result.covered_percent.round(2)
 
-  puts "\n📊 Coverage: #{covered}%"
+  puts "\nCoverage: #{covered}%"
 
   if covered < (ENV["COVERAGE_MIN"] || 80).to_f
-    abort "❌ Coverage below threshold"
+    abort "Coverage below threshold"
   end
 end
 

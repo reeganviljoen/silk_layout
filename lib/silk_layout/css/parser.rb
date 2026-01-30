@@ -13,11 +13,9 @@ module SilkLayout
           Crass.parse(css).each do |node|
             next unless node[:node] == :style_rule
 
-            # --- SELECTORS ---
             selector_text = node[:selector][:value].strip
             selectors = selector_text.split(",").map(&:strip)
 
-            # --- DECLARATIONS ---
             declarations = {}
 
             node[:children].each do |child|

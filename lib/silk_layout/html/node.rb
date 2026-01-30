@@ -25,10 +25,6 @@ module SilkLayout
         end
       end
 
-      # -----
-      # Class helpers (intentionally public)
-      # -----
-
       def self.build_text_node(node)
         text = node.text.strip
         return nil if text.empty?

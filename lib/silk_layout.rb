@@ -46,4 +46,12 @@ module SilkLayout
 
     SilkLayout::Render::PdfRenderer.render(box_tree, out)
   end
+
+  def self.render_document(html_document, out, url: nil)
+    dom, stylesheets = SilkLayout::HTML::Parser.parse_document(html_document, url: url)
+    rules = SilkLayout::CSS::Parser.parse_all(stylesheets)
+    box_tree = SilkLayout::Layout::Engine.layout(dom, rules)
+
+    SilkLayout::Render::PdfRenderer.render(box_tree, out)
+  end
 end

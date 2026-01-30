@@ -1,4 +1,49 @@
-<div id="card">
-  <p>Title</p>
-  <p>Body text</p>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page {
+        size: 800px 1000px;
+        margin: 0;
+      }
+
+      html, body {
+        width: 800px;
+        height: 1000px;
+        margin: 0;
+        padding: 0;
+        font-family: Helvetica;
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ID selector under test */
+      #card {
+        width: 360px;
+        padding: 16px;
+        border-width: 3px;
+        border-color: black;
+        display: block;
+      }
+
+      /* Element selectors */
+      p {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="card">
+      <p>Title</p>
+      <p>Body text</p>
+    </div>
+  </body>
+</html>

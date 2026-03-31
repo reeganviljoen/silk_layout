@@ -149,7 +149,8 @@ module SilkLayout
         normalized_text = normalize_text(node)
         return nil if normalized_text.nil? || normalized_text.empty?
 
-        TextBox.new(normalized_text, node.computed_style)
+        style = node.computed_style || node.parent&.computed_style
+        TextBox.new(normalized_text, style)
       end
 
       def normalize_text(node)

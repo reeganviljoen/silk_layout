@@ -28,7 +28,7 @@ module SilkLayout
       end
 
       def self.build_text_node(node, parent)
-        text = node.text.strip
+        text = node.text.to_s
         return nil if text.empty?
 
         new(

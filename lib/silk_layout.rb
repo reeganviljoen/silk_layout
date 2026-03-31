@@ -28,6 +28,8 @@ module SilkLayout
     autoload :Inline, "silk_layout/layout/inline"
     autoload :TextBox, "silk_layout/layout/inline"
     autoload :LineBox, "silk_layout/layout/inline"
+    autoload :InlineFormatter, "silk_layout/layout/inline_formatter"
+    autoload :FormattingBuilder, "silk_layout/layout/formatting_builder"
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
     autoload :Context, "silk_layout/layout/context"
     autoload :BlockLayout, "silk_layout/layout/block_layout"
@@ -36,6 +38,8 @@ module SilkLayout
   end
 
   module Render
+    autoload :FontLibrary, "silk_layout/render/font_library"
+    autoload :Painter, "silk_layout/render/painter"
     autoload :PdfRenderer, "silk_layout/render/pdf_renderer"
   end
 

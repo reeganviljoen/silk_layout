@@ -90,13 +90,25 @@ module SilkLayout
           left: px(style["border-left-width"] || style["border-width"])
         }
 
-        # Border exists if ANY side has width
-        box.has_border = box.border.values.any? { |v| v > 0 }
+        # Border styles
+        # ----------------------------
+        box.border_style = {
+          top: style["border-top-style"] || style["border-style"],
+          right: style["border-right-style"] || style["border-style"],
+          bottom: style["border-bottom-style"] || style["border-style"],
+          left: style["border-left-style"] || style["border-style"]
+        }
+
+        # Border exists if width > 0 AND style is not "none"
+        box.has_border = box.border.values.zip(box.border_style.values).any? do |width, style|
+          width > 0 && style != "none"
+        end
 
         # ----------------------------
         # Border colors
         # ----------------------------
         # CSS default: black if border exists and color not specified
+        # Only apply default color if border will actually be rendered (has_border is true)
         default_color = box.has_border ? :black : nil
 
         box.border_color = {

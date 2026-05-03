@@ -61,13 +61,16 @@ module SilkLayout
         return if box.is_a?(SilkLayout::Layout::AnonymousBlockBox)
         return unless box.has_border
 
+        # Skip rendering if border-style is "none" on all sides
+        return if box.border_style.values.all? { |style| style == "none" }
+
         x = px_to_pt(box.border_box_x)
         y = page_height_pt - px_to_pt(box.border_box_y + box.border_box_height)
         w = px_to_pt(box.border_box_width)
         h = px_to_pt(box.border_box_height)
 
         # --- Top border
-        if box.border[:top] > 0
+        if box.border[:top] > 0 && box.border_style[:top] != "none"
           canvas = set_color(canvas, box.border_color[:top])
           canvas.rectangle(
             x,
@@ -78,7 +81,7 @@ module SilkLayout
         end
 
         # --- Bottom border
-        if box.border[:bottom] > 0
+        if box.border[:bottom] > 0 && box.border_style[:bottom] != "none"
           canvas = set_color(canvas, box.border_color[:bottom])
           canvas.rectangle(
             x,
@@ -89,7 +92,7 @@ module SilkLayout
         end
 
         # --- Left border
-        if box.border[:left] > 0
+        if box.border[:left] > 0 && box.border_style[:left] != "none"
           canvas = set_color(canvas, box.border_color[:left])
           canvas.rectangle(
             x,
@@ -100,7 +103,7 @@ module SilkLayout
         end
 
         # --- Right border
-        if box.border[:right] > 0
+        if box.border[:right] > 0 && box.border_style[:right] != "none"
           canvas = set_color(canvas, box.border_color[:right])
           canvas.rectangle(
             x + w - px_to_pt(box.border[:right]),

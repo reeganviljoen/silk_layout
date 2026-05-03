@@ -12,7 +12,8 @@ module SilkLayout
       DEFAULTS = {
         "color" => "black",
         "font-size" => "16px",
-        "display" => "inline"
+        "display" => "inline",
+        "border-style" => "none"
       }.freeze
 
       # HTML element-specific defaults (user agent stylesheet)

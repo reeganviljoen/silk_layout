@@ -122,7 +122,19 @@ as Poppler or ImageMagick. Generated visual artifacts are written to
 
 ## Releasing
 
-This gem is still `0.1.0.dev`. Before a public 1.0 release, the project should
+SilkLayout releases use the checked-in release script:
+
+```sh
+DRY_RUN=1 script/release
+script/release
+```
+
+The script must be run from a clean, up-to-date `main` branch after the release
+PR is merged. It installs dependencies, runs the test/lint/build gate, publishes
+the gem through Bundler's release task, and creates a GitHub release from the
+matching `CHANGELOG.md` section.
+
+This gem is still pre-1.0. Before a public 1.0 release, the project should
 stabilize the supported CSS surface, add pagination, improve visual parity, and
 document compatibility promises.
 

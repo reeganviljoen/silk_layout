@@ -37,4 +37,4 @@ body:
     id: version
     attributes:
       label: Version or commit
-      placeholder: 0.1.0.dev / commit SHA
+      placeholder: 0.1.0 / commit SHA

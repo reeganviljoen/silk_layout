@@ -1,6 +1,9 @@
 # Visual regression artifacts
 tmp/visual/
 
+# Built gems
+*.gem
+
 # Ruby Lsp
 .ruby-lsp/
 #coverage

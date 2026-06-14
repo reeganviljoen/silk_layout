@@ -8,7 +8,7 @@ module SilkLayout
       def self.layout(dom, css_rules, viewport_width: DEFAULT_VIEWPORT_WIDTH)
         CSS::Cascade.apply(dom, css_rules)
 
-        box_tree = BoxBuilder.build(dom)
+        box_tree = FormattingBuilder.build(dom)
 
         root = Root.find(box_tree)
 

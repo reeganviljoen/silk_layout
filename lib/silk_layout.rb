@@ -23,19 +23,25 @@ module SilkLayout
   module Layout
     autoload :Box, "silk_layout/layout/box"
     autoload :BlockBox, "silk_layout/layout/box"
+    autoload :FlexBox, "silk_layout/layout/box"
     autoload :InlineBox, "silk_layout/layout/box"
     autoload :AnonymousBlockBox, "silk_layout/layout/box"
     autoload :Inline, "silk_layout/layout/inline"
     autoload :TextBox, "silk_layout/layout/inline"
     autoload :LineBox, "silk_layout/layout/inline"
+    autoload :InlineFormatter, "silk_layout/layout/inline_formatter"
+    autoload :FormattingBuilder, "silk_layout/layout/formatting_builder"
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
     autoload :Context, "silk_layout/layout/context"
     autoload :BlockLayout, "silk_layout/layout/block_layout"
+    autoload :FlexLayout, "silk_layout/layout/flex_layout"
     autoload :Engine, "silk_layout/layout/engine"
     autoload :Root, "silk_layout/layout/root"
   end
 
   module Render
+    autoload :FontLibrary, "silk_layout/render/font_library"
+    autoload :Painter, "silk_layout/render/painter"
     autoload :PdfRenderer, "silk_layout/render/pdf_renderer"
   end
 

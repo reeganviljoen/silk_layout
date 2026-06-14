@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "ferrum"
   spec.add_development_dependency "chunky_png"
   spec.add_development_dependency "irb"
+  spec.add_development_dependency "parallel", "< 2.0"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "simplecov-console"
 end

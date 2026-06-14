@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }} | {{ site.title }}</title>
+    <meta name="description" content="{{ site.description }}">
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" aria-label="Documentation">
+        <a class="brand" href="{{ '/' | relative_url }}">
+          <span class="brand-mark">SL</span>
+          <span>
+            <strong>SilkLayout</strong>
+            <small>0.1 release docs</small>
+          </span>
+        </a>
+
+        <nav>
+          <a href="#goal">Goal</a>
+          <a href="#status">Status</a>
+          <a href="#examples">Preview Gallery</a>
+          <a href="#supported">Supported So Far</a>
+          <a href="#before-1">Before 1.0</a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        {{ content }}
+      </main>
+    </div>
+  </body>
+</html>

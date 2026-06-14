@@ -3,9 +3,9 @@
 module SilkLayout
   module Layout
     class BlockLayout
-      LINE_HEIGHT = 16
-
       def self.layout(box, context, cursor_y = 0, parent_x = 0, containing_width = nil)
+        return FlexLayout.layout(box, context, cursor_y, parent_x, containing_width) if box.is_a?(FlexBox)
+
         box.x = parent_x + box.margin[:left]
         box.y = cursor_y + box.margin[:top]
 
@@ -38,11 +38,13 @@ module SilkLayout
           end
 
           if inline_buffer.any?
-            line = layout_inline(inline_buffer, content_width, content_x, current_y)
-            line.x = content_x
-            line.y = current_y
-            current_y += line.height
-            new_children << line
+            lines = InlineFormatter.layout(inline_buffer, content_width, content_x, current_y)
+            lines.each do |line|
+              line.x = content_x
+              line.y = current_y
+              current_y += line.height
+              new_children << line
+            end
             inline_buffer.clear
           end
 
@@ -57,16 +59,19 @@ module SilkLayout
         end
 
         if inline_buffer.any?
-          line = layout_inline(inline_buffer, content_width, content_x, current_y)
-          line.x = content_x
-          line.y = current_y
-          current_y += line.height
-          new_children << line
+          lines = InlineFormatter.layout(inline_buffer, content_width, content_x, current_y)
+          lines.each do |line|
+            line.x = content_x
+            line.y = current_y
+            current_y += line.height
+            new_children << line
+          end
         end
 
         box.children = new_children
 
         content_height = current_y - content_y
+        content_height = [content_height, box.height].max if box.explicit_height
 
         max_child_width =
           box.children.map(&:width).max || 0
@@ -83,44 +88,6 @@ module SilkLayout
           box.padding[:top] + box.padding[:bottom] +
           box.border[:top] + box.border[:bottom]
       end
-
-      def self.layout_inline(inline_children, context, parent_x, parent_y)
-        line = LineBox.new
-        cursor_x = 0
-
-        inline_children.each do |child|
-          child.x = parent_x + cursor_x
-          child.y = parent_y
-          child.width = measure_text(child)
-          child.height =
-            if child.is_a?(TextBox)
-              child.line_height
-            else
-              LINE_HEIGHT
-            end
-
-          cursor_x += child.width
-          line.add_child(child)
-        end
-
-        line.width = cursor_x
-        line.height = inline_children.map(&:height).max || LINE_HEIGHT
-
-        line
-      end
-
-      def self.measure_text(box)
-        case box
-        when TextBox
-          box.text.length * (box.font_size * 0.6)
-        when InlineBox
-          box.children.sum { |child| measure_text(child) }
-        else
-          0
-        end
-      end
-
-      private_class_method :layout_inline, :measure_text
     end
   end
 end

@@ -13,7 +13,11 @@ module SilkLayout
         :padding,
         :border,
         :border_color,
+        :background_color,
         :explicit_width,
+        :explicit_height,
+        :flex,
+        :display,
         :has_border
 
       def initialize(node)
@@ -34,8 +38,12 @@ module SilkLayout
           bottom: nil,
           left: nil
         }
+        @background_color = nil
 
         @explicit_width = false
+        @explicit_height = false
+        @flex = {}
+        @display = nil
       end
 
       def add_child(box)
@@ -60,6 +68,7 @@ module SilkLayout
     end
 
     class BlockBox < Box; end
+    class FlexBox < BlockBox; end
     class InlineBox < Box; end
 
     class AnonymousBlockBox < Box

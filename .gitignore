@@ -8,3 +8,5 @@ coverage/
 
 # macOS
 .DS_Store
+.gstack/
+CLAUDE.md

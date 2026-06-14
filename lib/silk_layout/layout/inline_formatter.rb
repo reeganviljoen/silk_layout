@@ -3,7 +3,7 @@
 module SilkLayout
   module Layout
     class InlineFormatter
-      Fragment = Struct.new(:box, :text, :width, :height, :break_after, keyword_init: true) do
+      Fragment = Struct.new(:box, :text, :width, :height, :break_after) do
         def whitespace?
           text&.match?(/\A\s+\z/)
         end

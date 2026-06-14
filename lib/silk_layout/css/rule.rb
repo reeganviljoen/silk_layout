@@ -2,15 +2,14 @@
 
 module SilkLayout
   module CSS
-    Declaration = Struct.new(:value, :important, keyword_init: true)
+    Declaration = Struct.new(:value, :important)
 
     Rule = Struct.new(
       :selector,
       :declarations,
       :specificity,
       :order,
-      :origin,
-      keyword_init: true
+      :origin
     )
   end
 end

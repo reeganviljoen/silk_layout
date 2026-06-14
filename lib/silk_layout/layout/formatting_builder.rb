@@ -187,7 +187,7 @@ module SilkLayout
         return nil unless index
 
         if direction == :previous
-          siblings[0...index].reverse_each.find { |candidate| !candidate.nil? }
+          siblings[0...index].rfind { |candidate| !candidate.nil? }
         else
           siblings[(index + 1)..]&.find { |candidate| !candidate.nil? }
         end

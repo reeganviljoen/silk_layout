@@ -8,11 +8,10 @@ module SilkLayout
         :base_content,
         :target_content,
         :outer_main,
-        :line,
-        keyword_init: true
+        :line
       )
 
-      Line = Struct.new(:items, :cross_size, :main_size, keyword_init: true)
+      Line = Struct.new(:items, :cross_size, :main_size)
 
       def self.layout(box, context, cursor_y = 0, parent_x = 0, containing_width = nil)
         new(box, context, cursor_y, parent_x, containing_width).layout

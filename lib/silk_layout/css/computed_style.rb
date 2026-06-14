@@ -26,6 +26,11 @@ module SilkLayout
         value && value != "auto"
       end
 
+      def explicit_height?
+        value = @values["height"]
+        value && value != "auto"
+      end
+
       def explicit_display?
         @explicit_properties.key?("display")
       end

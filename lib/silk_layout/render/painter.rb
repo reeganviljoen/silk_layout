@@ -8,6 +8,7 @@ module SilkLayout
       end
 
       def self.paint_box(canvas, box, page_height_pt)
+        draw_background(canvas, box, page_height_pt)
         draw_borders(canvas, box, page_height_pt)
 
         if box.is_a?(SilkLayout::Layout::TextBox)
@@ -34,6 +35,22 @@ module SilkLayout
         y_pt = page_height_pt - PdfRenderer.px_to_pt(box.y) - ascent_pt
 
         canvas.text(box.text, at: [x_pt, y_pt])
+      end
+
+      def self.draw_background(canvas, box, page_height_pt)
+        return if box.is_a?(SilkLayout::Layout::AnonymousBlockBox)
+        return unless box.respond_to?(:background_color) && box.background_color
+
+        rgb = rgb_color(box.background_color)
+        return unless rgb
+
+        x = PdfRenderer.px_to_pt(box.border_box_x)
+        y = page_height_pt - PdfRenderer.px_to_pt(box.border_box_y + box.border_box_height)
+        w = PdfRenderer.px_to_pt(box.border_box_width)
+        h = PdfRenderer.px_to_pt(box.border_box_height)
+
+        canvas.fill_color(*rgb)
+        canvas.rectangle(x, y, w, h).fill
       end
 
       def self.draw_borders(canvas, box, page_height_pt)
@@ -146,12 +163,13 @@ module SilkLayout
       def self.set_color(canvas, color)
         return canvas unless color
 
-        case color
-        when :red then canvas.fill_color(255, 0, 0)
-        when :green then canvas.fill_color(0, 255, 0)
-        when :blue then canvas.fill_color(0, 0, 255)
-        when :black then canvas.fill_color(0, 0, 0)
+        rgb = rgb_color(color)
+        if rgb
+          canvas.fill_color(*rgb)
+        else
+          canvas.fill_color(0, 0, 0)
         end
+
         canvas
       end
 
@@ -162,6 +180,23 @@ module SilkLayout
         return nil if normalized.empty?
 
         normalized.to_sym
+      end
+
+      def self.rgb_color(color)
+        normalized = color.to_s.strip.downcase
+        return nil if normalized.empty? || normalized == "transparent"
+
+        return hex_color(normalized) if normalized.start_with?("#")
+
+        NAMED_COLORS[normalized.to_sym]
+      end
+
+      def self.hex_color(color)
+        hex = color.delete_prefix("#")
+        hex = hex.chars.flat_map { |char| [char, char] }.join if hex.length == 3
+        return nil unless hex.match?(/\A[0-9a-f]{6}\z/)
+
+        hex.scan(/../).map { |component| component.to_i(16) }
       end
 
       def self.draw_corner(canvas, x, y, w, h, vertical_color, horizontal_color, kind)
@@ -198,6 +233,15 @@ module SilkLayout
       end
 
       private_class_method :paint_box
+
+      NAMED_COLORS = {
+        black: [0, 0, 0],
+        blue: [0, 0, 255],
+        green: [0, 128, 0],
+        lightblue: [173, 216, 230],
+        red: [255, 0, 0],
+        white: [255, 255, 255]
+      }.freeze
     end
   end
 end

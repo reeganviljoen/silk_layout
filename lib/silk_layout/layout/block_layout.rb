@@ -4,6 +4,8 @@ module SilkLayout
   module Layout
     class BlockLayout
       def self.layout(box, context, cursor_y = 0, parent_x = 0, containing_width = nil)
+        return FlexLayout.layout(box, context, cursor_y, parent_x, containing_width) if box.is_a?(FlexBox)
+
         box.x = parent_x + box.margin[:left]
         box.y = cursor_y + box.margin[:top]
 
@@ -69,6 +71,7 @@ module SilkLayout
         box.children = new_children
 
         content_height = current_y - content_y
+        content_height = [content_height, box.height].max if box.explicit_height
 
         max_child_width =
           box.children.map(&:width).max || 0

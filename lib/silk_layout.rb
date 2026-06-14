@@ -23,6 +23,7 @@ module SilkLayout
   module Layout
     autoload :Box, "silk_layout/layout/box"
     autoload :BlockBox, "silk_layout/layout/box"
+    autoload :FlexBox, "silk_layout/layout/box"
     autoload :InlineBox, "silk_layout/layout/box"
     autoload :AnonymousBlockBox, "silk_layout/layout/box"
     autoload :Inline, "silk_layout/layout/inline"
@@ -33,6 +34,7 @@ module SilkLayout
     autoload :BoxBuilder, "silk_layout/layout/box_builder"
     autoload :Context, "silk_layout/layout/context"
     autoload :BlockLayout, "silk_layout/layout/block_layout"
+    autoload :FlexLayout, "silk_layout/layout/flex_layout"
     autoload :Engine, "silk_layout/layout/engine"
     autoload :Root, "silk_layout/layout/root"
   end

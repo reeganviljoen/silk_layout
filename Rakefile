@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rake/testtask"
+require "bundler/gem_tasks"
 require "irb"
 require_relative "lib/silk_layout"
 

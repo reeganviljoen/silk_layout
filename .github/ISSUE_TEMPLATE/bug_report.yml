@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a rendering, parsing, or PDF generation bug.
+title: "[bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Minimal HTML/CSS input
+      description: Paste the smallest document or fixture that reproduces the bug.
+      render: html
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected output
+      description: What did Chromium or another reference renderer do?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual SilkLayout output
+      description: Include screenshots, PDFs, or visual diff notes if possible.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 / commit SHA

@@ -301,7 +301,7 @@ class FlexLayoutTest < Minitest::Test
 
     dom, stylesheets = SilkLayout::HTML::Parser.parse_document(html)
     rules = SilkLayout::CSS::Parser.parse_all(stylesheets)
-    SilkLayout::Layout::Engine.layout(dom, rules, viewport_width: viewport_width)
+    SilkLayout::Layout::Engine.layout(dom, rules, viewport_width: viewport_width).children.first
   end
 
   def text_content(box)

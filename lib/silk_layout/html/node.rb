@@ -6,6 +6,7 @@ module SilkLayout
       attr_reader :tag, :attributes, :text
       attr_accessor :children, :parent
       attr_accessor :computed_style
+      attr_accessor :resolved_source_url
 
       def initialize(tag:, attributes:, children:, text: nil, parent: nil)
         @tag = tag

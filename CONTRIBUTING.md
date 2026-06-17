@@ -35,6 +35,18 @@ Run one test file:
 bundle exec ruby -Ilib:test test/layout/flex_layout_test.rb
 ```
 
+Run one test method:
+
+```sh
+bundle exec ruby -Ilib:test test/layout/flex_layout_test.rb -n /justify_content/
+```
+
+Run the package smoke check:
+
+```sh
+bundle exec rake package:smoke
+```
+
 ## Visual Tests
 
 Visual scenarios live in `test/visual/<scenario>/` and include an `input.html`
@@ -48,6 +60,18 @@ Visual tests require:
 
 Artifacts are written to `tmp/visual/` and should not be committed unless they
 are intentionally copied into documentation.
+
+Run the full visual suite:
+
+```sh
+BROWSER_PATH=/path/to/chrome bundle exec ruby -Ilib:test test/visual_test.rb
+```
+
+Run a single visual fixture:
+
+```sh
+BROWSER_PATH=/path/to/chrome bundle exec ruby -Ilib:test test/visual_test.rb -n test_visual_flex_row_basic
+```
 
 ## Pull Requests
 

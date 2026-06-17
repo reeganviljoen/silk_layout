@@ -3,7 +3,7 @@
 module SilkLayout
   module Layout
     class InlineFormatter
-      Fragment = Struct.new(:box, :text, :width, :height, :break_after) do
+      Fragment = Struct.new(:box, :text, :width, :height, :break_after, :ascender) do
         def whitespace?
           text&.match?(/\A\s+\z/)
         end
@@ -61,12 +61,13 @@ module SilkLayout
 
           line = LineBox.new
           cursor_x = 0
-          baseline = fragments.map { |fragment| fragment.box.ascender if fragment.box.is_a?(TextBox) }.compact.max || 0
+          baseline = fragments.map { |fragment| fragment_ascender(fragment) }.max || 0
+          descent = fragments.map { |fragment| fragment.height - fragment_ascender(fragment) }.max || 0
 
           fragments.each do |fragment|
             child = fragment.box
             child.x = parent_x + cursor_x
-            child.y = parent_y + baseline - child.ascender
+            child.y = parent_y + baseline - fragment_ascender(fragment)
             child.width = fragment.width
             child.height = fragment.height
             cursor_x += child.width
@@ -74,7 +75,7 @@ module SilkLayout
           end
 
           line.width = cursor_x
-          line.height = fragments.map(&:height).max || 0
+          line.height = baseline + descent
           line.x = parent_x
           line.y = parent_y
           line
@@ -95,7 +96,9 @@ module SilkLayout
           when TextBox
             tokenize_text(box)
           when InlineBox
-            if box.node&.tag == "br"
+            if box.respond_to?(:replaced?) && box.replaced?
+              [replaced_fragment(box)]
+            elsif box.node&.tag == "br"
               [Fragment.new(box: box, break_after: true)]
             else
               flatten(box.children)
@@ -103,6 +106,18 @@ module SilkLayout
           else
             []
           end
+        end
+
+        def replaced_fragment(box)
+          width = box.width + box.padding[:left] + box.padding[:right] + box.border[:left] + box.border[:right]
+          height = box.height + box.padding[:top] + box.padding[:bottom] + box.border[:top] + box.border[:bottom]
+
+          Fragment.new(
+            box: box,
+            width: width,
+            height: height,
+            ascender: height
+          )
         end
 
         def tokenize_text(box)
@@ -125,6 +140,10 @@ module SilkLayout
             font_weight: box.font_weight,
             font_style: box.font_style
           )
+        end
+
+        def fragment_ascender(fragment)
+          fragment.ascender || (fragment.box.is_a?(TextBox) ? fragment.box.ascender : fragment.height)
         end
       end
     end

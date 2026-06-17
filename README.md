@@ -3,35 +3,28 @@
 SilkLayout is a Ruby-native HTML/CSS layout engine that renders documents to PDF.
 
 The long-term goal is to make PDF generation feel natural inside Ruby apps without
-delegating layout to a browser engine. The project is currently on the `0.1`
-release track: useful for experimentation, regression testing, and early document
-rendering, but not yet 1.0 or browser-spec complete.
+delegating layout to a browser engine. The project is currently on the `0.2`
+pre-release track: useful for experimentation, regression testing, and early
+document rendering, but not yet 1.0 or browser-spec complete.
 
 ## Current Status
 
-SilkLayout currently supports:
+SilkLayout is pre-1.0, so support is described as current, partial, or
+unsupported rather than as a browser compatibility promise.
 
-- HTML parsing with Nokogiri
-- CSS parsing with Crass
-- CSS cascade basics, selector matching, specificity, inheritance, inline styles,
-  and `!important`
-- block layout, inline text layout, line wrapping, and whitespace normalization
-- box model spacing: margin, padding, borders, border colors, width, and height
-- basic flex layout: rows, columns, reverse directions, wrapping, gaps, grow,
-  shrink, basis, justify, and align basics
-- PDF rendering with HexaPDF for text, borders, border colors, and simple
-  background colors
-- visual regression tests against Chromium output
-
-Not yet supported:
-
-- CSS Grid
-- percentage and `calc()` sizing
-- images
-- pagination and page-break controls
-- positioning, floats, tables, and list markers
-- border radius, shadows, gradients, and background images
-- full CSS color syntax such as `rgb()`, `rgba()`, and `hsl()`
+| Area | 0.2 status | Notes |
+| --- | --- | --- |
+| HTML parsing | Current | Nokogiri document parsing, text nodes, attributes, inline styles, `<style>` blocks, linked stylesheets, and base URLs. |
+| CSS cascade | Current | Crass parsing, selector matching, specificity, inheritance, inline styles, and `!important`; unsupported selectors fail closed. |
+| Block and inline layout | Current | Block stacking, inline text measurement, line wrapping, whitespace normalization, margins, padding, borders, width, and height. |
+| Flex layout | Partial | Rows, columns, reverse directions, wrapping, gaps, grow, shrink, basis, justify, and align basics; full flexbox parity is still out of scope. |
+| CSS values and colors | Partial / 0.2 target | Pixel lengths are current; 0.2 tracks percent and `calc()` lengths for common box values plus named, hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and `transparent` colors. |
+| PDF painting | Partial | Text, borders, border colors, and simple backgrounds are current; 0.2 tracks local raster image painting and print page sizing. |
+| Images | Partial / 0.2 target | Local image loading, intrinsic sizing, and PDF smoke coverage are planned for 0.2; remote images, SVG, animated formats, `object-fit`, and `object-position` are unsupported. |
+| Visual regression | Current | Chromium reference PDF rendering with PNG comparison; generated artifacts are written to `tmp/visual/`. |
+| Pagination and fragmentation | Unsupported | Page breaks, repeated headers/footers, and content overflow across pages are before-1.0 work. |
+| Advanced layout | Unsupported | CSS Grid, positioning, floats, tables, and list markers are not implemented yet. |
+| Advanced painting | Unsupported | Border radius, shadows, gradients, background images, filters, and transforms are not implemented yet. |
 
 ## Installation
 
@@ -104,6 +97,12 @@ Run tests only:
 bundle exec rake test
 ```
 
+Run visual regression tests:
+
+```sh
+BROWSER_PATH=/path/to/chrome bundle exec ruby -Ilib:test test/visual_test.rb
+```
+
 Run lint:
 
 ```sh
@@ -114,6 +113,19 @@ Run a single test file:
 
 ```sh
 bundle exec ruby -Ilib:test test/layout/flex_layout_test.rb
+```
+
+Run a single visual fixture:
+
+```sh
+BROWSER_PATH=/path/to/chrome bundle exec ruby -Ilib:test test/visual_test.rb -n test_visual_flex_row_basic
+```
+
+Build and install the gem into a temporary `GEM_HOME`, then require it and render
+a smoke PDF from the installed package:
+
+```sh
+bundle exec rake package:smoke
 ```
 
 Visual regression tests require Chromium or Chrome plus PDF-to-PNG tooling such
@@ -130,9 +142,9 @@ script/release
 ```
 
 The script must be run from a clean, up-to-date `main` branch after the release
-PR is merged. It installs dependencies, runs the test/lint/build gate, publishes
-the gem through Bundler's release task, and creates a GitHub release from the
-matching `CHANGELOG.md` section.
+PR is merged. It installs dependencies, runs the test/lint/package smoke gate,
+publishes the gem through Bundler's release task, and creates a GitHub release
+from the matching `CHANGELOG.md` section.
 
 This gem is still pre-1.0. Before a public 1.0 release, the project should
 stabilize the supported CSS surface, add pagination, improve visual parity, and

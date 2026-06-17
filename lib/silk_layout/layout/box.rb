@@ -18,7 +18,12 @@ module SilkLayout
         :explicit_height,
         :flex,
         :display,
-        :has_border
+        :has_border,
+        :replaced,
+        :image_source,
+        :image_resource,
+        :intrinsic_width,
+        :intrinsic_height
 
       def initialize(node)
         @node = node
@@ -44,6 +49,11 @@ module SilkLayout
         @explicit_height = false
         @flex = {}
         @display = nil
+        @replaced = false
+        @image_source = nil
+        @image_resource = nil
+        @intrinsic_width = nil
+        @intrinsic_height = nil
       end
 
       def add_child(box)
@@ -64,6 +74,34 @@ module SilkLayout
 
       def border_box_height
         height
+      end
+
+      def content_box_x
+        x + border[:left] + padding[:left]
+      end
+
+      def content_box_y
+        y + border[:top] + padding[:top]
+      end
+
+      def content_box_width
+        [width - border[:left] - border[:right] - padding[:left] - padding[:right], 0].max
+      end
+
+      def content_box_height
+        [height - border[:top] - border[:bottom] - padding[:top] - padding[:bottom], 0].max
+      end
+
+      def replaced?
+        replaced
+      end
+
+      def image?
+        !image_resource.nil?
+      end
+
+      def image_path
+        image_resource&.path
       end
     end
 

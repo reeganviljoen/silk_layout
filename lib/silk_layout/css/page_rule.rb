@@ -80,10 +80,24 @@ module SilkLayout
       end
 
       def size
-        declaration = declarations.rfind { |property, _declaration| property == "size" }
+        declaration = last_declaration_named("size")
         return nil unless declaration
 
         self.class.parse_size(declaration[1].value)
+      end
+
+      private
+
+      def last_declaration_named(name)
+        index = declarations.length - 1
+        while index >= 0
+          declaration = declarations[index]
+          return declaration if declaration[0] == name
+
+          index -= 1
+        end
+
+        nil
       end
     end
   end

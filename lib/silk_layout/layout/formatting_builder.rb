@@ -157,8 +157,8 @@ module SilkLayout
       def replaced_dimensions(style, attributes, image)
         attr_width = html_dimension(attributes["width"])
         attr_height = html_dimension(attributes["height"])
-        css_width = style.explicit_width? ? px(style["width"]) : nil
-        css_height = style.explicit_height? ? px(style["height"]) : nil
+        css_width = css_replaced_dimension(style, "width")
+        css_height = css_replaced_dimension(style, "height")
 
         width = css_width.nil? ? attr_width : css_width
         height = css_height.nil? ? attr_height : css_height
@@ -190,6 +190,15 @@ module SilkLayout
         return nil unless width&.positive? && height&.positive?
 
         width.to_f / height
+      end
+
+      def css_replaced_dimension(style, property)
+        return nil unless style.public_send("explicit_#{property}?")
+
+        raw = style[property]
+        return nil if CSS::Values.reference_relative?(raw)
+
+        CSS::Values.resolve_length(raw, default: nil)
       end
 
       def build_text(node)

@@ -11,7 +11,7 @@ module SilkLayout
 
       class << self
         def layout(inline_children, available_width, parent_x, parent_y)
-          fragments = flatten(inline_children)
+          fragments = flatten(inline_children, available_width)
           lines = []
           current_fragments = []
           current_y = parent_y
@@ -87,30 +87,31 @@ module SilkLayout
           trimmed
         end
 
-        def flatten(boxes)
-          boxes.flat_map { |box| flatten_box(box) }
+        def flatten(boxes, available_width)
+          boxes.flat_map { |box| flatten_box(box, available_width) }
         end
 
-        def flatten_box(box)
+        def flatten_box(box, available_width)
           case box
           when TextBox
             tokenize_text(box)
           when InlineBox
             if box.respond_to?(:replaced?) && box.replaced?
-              [replaced_fragment(box)]
+              [replaced_fragment(box, available_width)]
             elsif box.node&.tag == "br"
               [Fragment.new(box: box, break_after: true)]
             else
-              flatten(box.children)
+              flatten(box.children, available_width)
             end
           else
             []
           end
         end
 
-        def replaced_fragment(box)
-          width = box.width + box.padding[:left] + box.padding[:right] + box.border[:left] + box.border[:right]
-          height = box.height + box.padding[:top] + box.padding[:bottom] + box.border[:top] + box.border[:bottom]
+        def replaced_fragment(box, available_width)
+          content_width, content_height = replaced_content_size(box, available_width)
+          width = content_width + horizontal_box_edges(box)
+          height = content_height + vertical_box_edges(box)
 
           Fragment.new(
             box: box,
@@ -118,6 +119,64 @@ module SilkLayout
             height: height,
             ascender: height
           )
+        end
+
+        def replaced_content_size(box, available_width)
+          width = resolved_replaced_width(box, available_width)
+          height = resolved_replaced_height(box)
+          ratio = aspect_ratio(box)
+
+          if width.nil? && height
+            width = ratio ? height * ratio : box.width
+          elsif height.nil? && width
+            height = ratio ? width / ratio : box.height
+          end
+
+          [width || box.width, height || box.height].map { |value| [value, 0].max }
+        end
+
+        def resolved_replaced_width(box, available_width)
+          raw = style_value(box, "width")
+          return box.width if raw.nil? || raw == "auto"
+
+          width = CSS::Values.resolve_length(raw, reference: available_width, default: box.width)
+          border_box_sizing?(box) ? width - horizontal_box_edges(box) : width
+        end
+
+        def resolved_replaced_height(box)
+          raw = style_value(box, "height")
+          return nil if raw.nil? || raw == "auto"
+
+          height = CSS::Values.resolve_length(raw, default: box.height)
+          border_box_sizing?(box) ? height - vertical_box_edges(box) : height
+        end
+
+        def aspect_ratio(box)
+          image_ratio = box.image_resource&.aspect_ratio
+          return image_ratio if image_ratio
+
+          return nil unless box.width.positive? && box.height.positive?
+
+          box.width.to_f / box.height
+        end
+
+        def border_box_sizing?(box)
+          style_value(box, "box-sizing") == "border-box"
+        end
+
+        def horizontal_box_edges(box)
+          box.border[:left] + box.border[:right] + box.padding[:left] + box.padding[:right]
+        end
+
+        def vertical_box_edges(box)
+          box.border[:top] + box.border[:bottom] + box.padding[:top] + box.padding[:bottom]
+        end
+
+        def style_value(box, property)
+          value = box.node&.computed_style&.[](property)
+          return nil if value.to_s.strip.empty?
+
+          value
         end
 
         def tokenize_text(box)

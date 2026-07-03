@@ -33,6 +33,28 @@ class ImageLayoutTest < Minitest::Test
     assert_in_delta 16, image.content_box_height
   end
 
+  def test_inline_css_percentage_width_resolves_against_container
+    image = image_for(<<~HTML)
+      <div style="width:200px">
+        <img src="images/checker.png" style="width:50%" alt="checker">
+      </div>
+    HTML
+
+    assert_in_delta 100, image.content_box_width
+    assert_in_delta 66.67, image.content_box_height, 0.01
+  end
+
+  def test_inline_css_calc_width_resolves_against_container
+    image = image_for(<<~HTML)
+      <div style="width:200px">
+        <img src="images/checker.png" style="width:calc(50% - 10px)" alt="checker">
+      </div>
+    HTML
+
+    assert_in_delta 90, image.content_box_width
+    assert_in_delta 60, image.content_box_height, 0.01
+  end
+
   def test_css_height_preserves_intrinsic_aspect_ratio
     image = image_for(%(<img src="images/checker.png" style="height: 4px" alt="checker">))
 

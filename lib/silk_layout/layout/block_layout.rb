@@ -64,7 +64,9 @@ module SilkLayout
         box.children = new_children
 
         content_height = current_y - content_y
-        content_height = [content_height, box.height].max if box.explicit_height
+        if box.explicit_height
+          content_height = [content_height, content_height_from_css_height(box, declared_height(box))].max
+        end
 
         max_child_width =
           box.children.map(&:width).max || 0
@@ -168,12 +170,29 @@ module SilkLayout
         width - horizontal_box_edges(box)
       end
 
+      def self.declared_height(box)
+        raw = style_value(box, "height")
+        return box.height if raw.nil? || raw == "auto"
+
+        CSS::Values.resolve_length(raw, default: box.height)
+      end
+
+      def self.content_height_from_css_height(box, height)
+        content_height = border_box_sizing?(box) ? height - vertical_box_edges(box) : height
+
+        [content_height, 0].max
+      end
+
       def self.border_box_sizing?(box)
         style_value(box, "box-sizing") == "border-box"
       end
 
       def self.horizontal_box_edges(box)
         box.border[:left] + box.border[:right] + box.padding[:left] + box.padding[:right]
+      end
+
+      def self.vertical_box_edges(box)
+        box.border[:top] + box.border[:bottom] + box.padding[:top] + box.padding[:bottom]
       end
 
       def self.preserve_assigned_width?(box, raw_width, available_width)

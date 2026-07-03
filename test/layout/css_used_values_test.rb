@@ -60,6 +60,17 @@ class CssUsedValuesTest < Minitest::Test
     assert_in_delta 150, child.width, 0.01
   end
 
+  def test_border_box_height_includes_padding_and_border
+    tree = build_layout(<<~HTML)
+      <div style="height:100px;box-sizing:border-box;padding:10px;border:5px solid black"></div>
+    HTML
+
+    box = tree.children.first
+
+    assert_in_delta 100, box.height, 0.01
+    assert_in_delta 70, box.content_box_height, 0.01
+  end
+
   def test_applies_min_and_max_width_constraints
     minned = build_layout(<<~HTML, viewport_width: 400)
       <div style="width:50%;min-width:300px"></div>

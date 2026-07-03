@@ -26,6 +26,39 @@ unsupported rather than as a browser compatibility promise.
 | Advanced layout | Unsupported | CSS Grid, positioning, floats, tables, and list markers are not implemented yet. |
 | Advanced painting | Unsupported | Border radius, shadows, gradients, background images, filters, and transforms are not implemented yet. |
 
+## Example-Driven Roadmap
+
+The next rendering milestones are anchored to realistic document families rather
+than abstract CSS checklists. The comparison fixtures in `tmp/pdf_compare/`
+currently show a browser/Chromium render next to SilkLayout output for each
+target. They are temporary evaluation artifacts, but the document types below are
+the product goals they represent.
+
+| Goal document | Current fit | Feature work needed |
+| --- | --- | --- |
+| Plain invoices and receipt-like statements | Closest near-term target. Simple text, spacing, borders, page sizing, and gray bands are mostly in range. | Table layout or robust table-like rows; reliable numeric column alignment; better font-weight handling; footer placement; tighter support for absolute/relative positioning used by headers and payment blocks. |
+| Colorful invoices and branded receipts | Partially reachable when simplified, but decorative layout falls apart quickly. | Stable flex for document components; border radius; layered backgrounds; background images; gradients; better positioned panels; custom or mapped font weights; table row styling including alternating fills. |
+| Government notices and simple pamphlets | Good medium-term target for one-page notices; multi-page publications remain limited. | Multi-column layout; pagination and fragmentation; repeated headers/footers; page counters; column rules; improved text sizing/leading parity; better page-margin and print CSS handling. |
+| Posters and flyers | Useful stress target, but not visually faithful yet. | Absolute positioning; transforms/rotation; border radius and circles; dashed borders; SVG/vector image support; background images/textures; object fitting and image clipping; richer z-index/layering. |
+| Brochures and park/map guides | Long-range target because these combine nearly every hard print feature. | Multi-page spreads; CSS Grid; floats; positioned overlays; clipping/masking; remote and local raster image scaling; SVG/vector paths; map/icon rendering; gradients and blend-like background effects; robust small-text layout. |
+
+Cross-cutting engine work that serves all of these goals:
+
+- Stabilize font resolution and weight/style mapping so common CSS such as
+  `font-weight: bold` never crashes PDF rendering.
+- Make partial flexbox behavior predictable for document layout, then add
+  regression fixtures for invoice headers, side panels, and totals blocks.
+- Add a first-class table layout path before treating real invoices or receipts
+  as supported.
+- Add paged-media primitives: page breaks, content overflow across pages,
+  repeated headers/footers, and page counters.
+- Expand the painter beyond rectangular fills and straight borders: rounded
+  corners, dashed borders, gradients, background images, and image clipping.
+- Support SVG and remote images so real logos, badges, maps, QR codes, and
+  brochure artwork can be rendered without pre-flattening.
+- Keep browser-vs-SilkLayout visual comparison fixtures for each goal document
+  and graduate them into the visual regression suite as features land.
+
 ## Installation
 
 Add the gem to your bundle once released:

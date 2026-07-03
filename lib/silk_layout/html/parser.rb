@@ -78,7 +78,7 @@ module SilkLayout
         dir = p.to_s
         dir = "#{dir}/" unless dir.end_with?("/")
 
-        URI::Generic.build(scheme: "file", path: dir)
+        URI::Generic.build(scheme: "file", path: URI::RFC2396_PARSER.escape(dir, /[^A-Za-z0-9\-._~\/]/))
       end
 
       def self.fetch_stylesheet(href, base_uri, cache)
@@ -110,7 +110,7 @@ module SilkLayout
 
         URI.join(base_uri.to_s, href)
       rescue URI::InvalidURIError
-        URI.join(base_uri.to_s, URI::DEFAULT_PARSER.escape(href))
+        URI.join(base_uri.to_s, URI::RFC2396_PARSER.escape(href))
       end
 
       def self.resolve_resource_urls!(node, base_uri)

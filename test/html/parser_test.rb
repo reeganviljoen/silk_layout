@@ -55,6 +55,26 @@ class HTMLParserTest < Minitest::Test
     end
   end
 
+  def test_invalid_document_url_falls_back_to_file_uri
+    _root, stylesheets = SilkLayout::HTML::Parser.parse_document(
+      "<!doctype html><style>p { color: red; }</style><p>Hello</p>",
+      url: "http://[bad"
+    )
+
+    assert_equal ["p { color: red; }"], stylesheets
+  end
+
+  def test_invalid_relative_href_is_escaped_before_joining
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, "space name.css"), "p { color: blue; }")
+      base = SilkLayout::HTML::Parser.file_uri_for(Pathname.new(dir))
+
+      css = SilkLayout::HTML::Parser.fetch_stylesheet("space name.css", base, {})
+
+      assert_equal "p { color: blue; }", css
+    end
+  end
+
   def test_fetches_http_stylesheet_redirects
     with_server do |server, base_url|
       server.mount_proc "/redirect.css" do |_req, res|

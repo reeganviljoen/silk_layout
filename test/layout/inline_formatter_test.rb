@@ -36,6 +36,18 @@ class InlineFormatterTest < Minitest::Test
     assert_equal ["Hello world", "again"], line_texts(tree)
   end
 
+  def test_break_element_flushes_current_line
+    tree = build_layout("<p>Hello<br>world</p>", viewport_width: 300)
+
+    assert_equal ["Hello", "world"], line_texts(tree)
+  end
+
+  def test_leading_whitespace_is_trimmed_from_inline_run
+    tree = build_layout("<p> Hello</p>", viewport_width: 300)
+
+    assert_equal ["Hello"], line_texts(tree)
+  end
+
   private
 
   def build_layout(body, viewport_width:)

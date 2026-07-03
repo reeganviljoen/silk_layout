@@ -76,6 +76,36 @@ class CssUsedValuesTest < Minitest::Test
     assert_in_delta 120, maxed.children.first.children.first.width, 0.01
   end
 
+  def test_flushes_inline_content_before_block_children
+    tree = build_layout(<<~HTML)
+      <div>
+        hello
+        <p>block</p>
+        tail
+      </div>
+    HTML
+
+    outer = tree.children.first
+
+    assert_equal ["hello"], line_texts(outer.children[0])
+    assert_equal "p", outer.children[1].node.tag
+    assert_equal ["tail"], line_texts(outer.children[2])
+  end
+
+  def test_auto_border_box_width_accounts_for_edges
+    tree = build_layout(<<~HTML, viewport_width: 300)
+      <div style="box-sizing:border-box;padding-left:20px;padding-right:30px;border-left:5px solid black;border-right:10px solid black">
+        <div></div>
+      </div>
+    HTML
+
+    outer = tree.children.first
+    child = outer.children.first
+
+    assert_in_delta 300, outer.width, 0.01
+    assert_in_delta 235, child.width, 0.01
+  end
+
   private
 
   def build_layout(body, viewport_width: 800)
@@ -91,5 +121,11 @@ class CssUsedValuesTest < Minitest::Test
     dom, stylesheets = SilkLayout::HTML::Parser.parse_document(html)
     rules = SilkLayout::CSS::Parser.parse_all(stylesheets)
     SilkLayout::Layout::Engine.layout(dom, rules, viewport_width: viewport_width)
+  end
+
+  def line_texts(box, acc = [])
+    acc << box.children.map(&:text).join if box.is_a?(SilkLayout::Layout::LineBox)
+    box.children.each { |child| line_texts(child, acc) }
+    acc
   end
 end

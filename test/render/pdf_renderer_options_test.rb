@@ -71,6 +71,22 @@ class PdfRendererOptionsTest < Minitest::Test
     assert_match(/0\.0 [0-9.]+ 240\.0 [0-9.]+ re/, page_contents(path))
   end
 
+  def test_invalid_page_size_type_is_rejected
+    error = assert_raises(ArgumentError) do
+      SilkLayout::Render::PdfRenderer.render(empty_box, File.join(@tmpdir, "bad.pdf"), page_size: :letter)
+    end
+
+    assert_equal "page_size must be an Array or Hash", error.message
+  end
+
+  def test_invalid_page_dimensions_are_rejected
+    error = assert_raises(ArgumentError) do
+      SilkLayout::Render::PdfRenderer.render(empty_box, File.join(@tmpdir, "bad.pdf"), page_width: 0)
+    end
+
+    assert_equal "page_width must be a positive number of CSS pixels", error.message
+  end
+
   private
 
   def render_pdf(html, **options)
@@ -88,5 +104,9 @@ class PdfRendererOptionsTest < Minitest::Test
 
   def page_contents(path)
     HexaPDF::Document.open(path).pages[0].contents
+  end
+
+  def empty_box
+    SilkLayout::Layout::BlockBox.new(nil)
   end
 end

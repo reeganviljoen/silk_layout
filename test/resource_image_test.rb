@@ -38,6 +38,22 @@ class ResourceImageTest < Minitest::Test
     end
   end
 
+  def test_load_returns_nil_for_invalid_uri
+    assert_nil SilkLayout::Resource::Image.load("http://[bad")
+  end
+
+  def test_jpeg_reader_skips_non_dimension_segments
+    Dir.mktmpdir do |dir|
+      path = File.join(dir, "sample.jpg")
+      File.binwrite(path, jpeg_bytes_with_app_segment(width: 19, height: 13))
+
+      image = SilkLayout::Resource::Image.load(path)
+
+      assert_equal 19, image.width
+      assert_equal 13, image.height
+    end
+  end
+
   private
 
   def jpeg_bytes(width:, height:)
@@ -56,5 +72,14 @@ class ResourceImageTest < Minitest::Test
       0x00,
       0xFF, 0xD9
     ].pack("C*")
+  end
+
+  def jpeg_bytes_with_app_segment(width:, height:)
+    [
+      0xFF, 0xD8,
+      0xFF, 0xE0,
+      0x00, 0x04,
+      0x00, 0x00
+    ].pack("C*") + jpeg_bytes(width: width, height: height).byteslice(2..)
   end
 end

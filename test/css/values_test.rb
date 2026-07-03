@@ -21,4 +21,24 @@ class CssValuesTest < Minitest::Test
       SilkLayout::CSS::Values.expanded_edges("calc(100% - 20px) 5px")
     )
   end
+
+  def test_named_and_invalid_lengths_resolve_safely
+    assert_in_delta 3, SilkLayout::CSS::Values.resolve_length("medium"), 0.01
+    assert_in_delta 0, SilkLayout::CSS::Values.resolve_length("not-a-length"), 0.01
+  end
+
+  def test_reference_relative_lengths_use_default_without_reference
+    assert_in_delta 7, SilkLayout::CSS::Values.resolve_length("50%", default: 7), 0.01
+    assert_in_delta 9, SilkLayout::CSS::Values.resolve_length("calc(50% + 2px)", default: 9), 0.01
+  end
+
+  def test_malformed_calc_falls_back_to_numeric_prefix
+    assert_in_delta 0, SilkLayout::CSS::Values.resolve_length("calc(100% * 2)", reference: 200), 0.01
+  end
+
+  def test_unknown_length_type_resolves_to_default
+    length = SilkLayout::CSS::Values::Length.new(:unknown)
+
+    assert_equal 11, length.resolve(default: 11)
+  end
 end

@@ -56,6 +56,17 @@ class BoxModelShorthandTest < Minitest::Test
     assert_equal :"#cc0000", tree.background_color
   end
 
+  def test_reads_function_colors
+    tree = build_tree(<<~HTML)
+      <div style="display:block;border:2px solid rgb(10, 20, 30);background:hsl(120, 100%, 25%)">Hello</div>
+    HTML
+
+    assert_equal :"rgb(10, 20, 30)", tree.border_color[:top]
+    assert_equal :"hsl(120, 100%, 25%)", tree.background_color
+    assert_equal [10, 20, 30], SilkLayout::Render::Painter.rgb_color(tree.border_color[:top])
+    assert_equal [0, 128, 0], SilkLayout::Render::Painter.rgb_color(tree.background_color)
+  end
+
   def test_parses_flex_keywords_and_flow
     auto = build_tree(<<~HTML)
       <div style="display:flex;flex:auto;flex-flow:column wrap">Hello</div>
@@ -92,6 +103,6 @@ class BoxModelShorthandTest < Minitest::Test
 
     dom, = SilkLayout::HTML::Parser.parse_document(html)
     SilkLayout::CSS::Cascade.apply(dom, [])
-    SilkLayout::Layout::Root.find(SilkLayout::Layout::FormattingBuilder.build(dom))
+    SilkLayout::Layout::Root.find(SilkLayout::Layout::FormattingBuilder.build(dom)).children.first
   end
 end

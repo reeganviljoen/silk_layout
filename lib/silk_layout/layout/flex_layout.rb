@@ -282,6 +282,7 @@ module SilkLayout
         end
 
         BlockLayout.layout(child, @context, 0, 0, width)
+        child.height = [height, 0].max + vertical_box_edges(child) if height
       end
 
       def row_base_content(child)

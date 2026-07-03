@@ -19,6 +19,7 @@ module SilkLayout
         "strong" => "inline",
         "em" => "inline",
         "br" => "inline",
+        "img" => "inline",
         "h1" => "block",
         "h2" => "block",
         "h3" => "block",
@@ -131,8 +132,73 @@ module SilkLayout
 
         box.background_color = color(background_color(style))
         box.flex = flex_values(style)
+        apply_image_data(box, node, style)
 
         box
+      end
+
+      def apply_image_data(box, node, style)
+        return unless node.tag == "img"
+
+        source = node.resolved_source_url || node.attributes["src"]
+        image = SilkLayout::Resource::Image.load(source)
+
+        box.replaced = true
+        box.image_source = source.to_s
+        box.image_resource = image
+        box.intrinsic_width = image&.width
+        box.intrinsic_height = image&.height
+
+        box.width, box.height = replaced_dimensions(style, node.attributes, image)
+        box.explicit_width = true
+        box.explicit_height = true
+      end
+
+      def replaced_dimensions(style, attributes, image)
+        attr_width = html_dimension(attributes["width"])
+        attr_height = html_dimension(attributes["height"])
+        css_width = css_replaced_dimension(style, "width")
+        css_height = css_replaced_dimension(style, "height")
+
+        width = css_width.nil? ? attr_width : css_width
+        height = css_height.nil? ? attr_height : css_height
+        ratio = image&.aspect_ratio || aspect_ratio(attr_width, attr_height)
+
+        if width.nil? && height.nil?
+          width = image&.width || 0
+          height = image&.height || 0
+        elsif width.nil?
+          width = ratio ? height * ratio : (image&.width || 0)
+        elsif height.nil?
+          height = ratio ? width / ratio : (image&.height || 0)
+        end
+
+        [width.to_f, height.to_f]
+      end
+
+      def html_dimension(value)
+        raw = value.to_s.strip
+        return nil if raw.empty?
+
+        raw = raw.delete_suffix("px")
+        return nil unless raw.match?(/\A[-+]?\d*\.?\d+\z/)
+
+        raw.to_f
+      end
+
+      def aspect_ratio(width, height)
+        return nil unless width&.positive? && height&.positive?
+
+        width.to_f / height
+      end
+
+      def css_replaced_dimension(style, property)
+        return nil unless style.public_send("explicit_#{property}?")
+
+        raw = style[property]
+        return nil if CSS::Values.reference_relative?(raw)
+
+        CSS::Values.resolve_length(raw, default: nil)
       end
 
       def build_text(node)
@@ -261,20 +327,7 @@ module SilkLayout
       end
 
       def expanded_values(value)
-        tokens = split_tokens(value)
-
-        case tokens.length
-        when 0
-          {top: nil, right: nil, bottom: nil, left: nil}
-        when 1
-          {top: tokens[0], right: tokens[0], bottom: tokens[0], left: tokens[0]}
-        when 2
-          {top: tokens[0], right: tokens[1], bottom: tokens[0], left: tokens[1]}
-        when 3
-          {top: tokens[0], right: tokens[1], bottom: tokens[2], left: tokens[1]}
-        else
-          {top: tokens[0], right: tokens[1], bottom: tokens[2], left: tokens[3]}
-        end
+        CSS::Values.expanded_edges(value)
       end
 
       def border_shorthand(value)
@@ -371,9 +424,10 @@ module SilkLayout
       end
 
       def color(value)
-        return nil unless value
+        parsed = SilkLayout::CSS::Color.parse(value)
+        return nil unless parsed
 
-        value.to_sym
+        parsed.to_sym
       end
 
       def number(value, default)
@@ -386,7 +440,7 @@ module SilkLayout
       end
 
       def split_tokens(value)
-        value.to_s.strip.split(/\s+/).reject(&:empty?)
+        CSS::Values.split_tokens(value)
       end
 
       def numeric?(value)
@@ -415,8 +469,8 @@ module SilkLayout
       def color_token?(value)
         raw = value.to_s.strip
         return false if raw.empty?
-        return true if raw.start_with?("#")
-        return false if %w[none transparent inherit initial unset].include?(raw)
+        return true if SilkLayout::CSS::Color.parse(raw)
+        return false if %w[none inherit initial unset].include?(raw)
 
         !border_width?(raw) && !border_style?(raw) && !raw.include?("(") && !raw.include?("/")
       end

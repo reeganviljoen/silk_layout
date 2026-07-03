@@ -223,7 +223,7 @@ main() {
   bundle install
   bundle exec rake test
   bundle exec rake standard
-  bundle exec rake build
+  bundle exec rake package:smoke
 
   if [ "${DRY_RUN:-}" = "1" ]; then
     echo "Dry run complete. Skipping: bundle exec rake release and gh release create"

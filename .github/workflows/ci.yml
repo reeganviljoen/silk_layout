@@ -24,6 +24,21 @@ jobs:
       - name: StandardRB
         run: bundle exec standardrb
 
+  package:
+    name: package smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Build and install gem
+        run: bundle exec rake package:smoke
+
   test:
     name: test (Ruby ${{ matrix.ruby }})
     runs-on: ubuntu-latest

@@ -13,7 +13,10 @@ module SilkLayout
         base_uri = base_uri_for(document, url)
         stylesheets = extract_stylesheets!(document, base_uri)
 
-        [Node.from_nokogiri(document.root), stylesheets]
+        root = Node.from_nokogiri(document.root)
+        resolve_resource_urls!(root, base_uri)
+
+        [root, stylesheets]
       end
 
       def self.extract_stylesheets!(document, base_uri)
@@ -75,7 +78,7 @@ module SilkLayout
         dir = p.to_s
         dir = "#{dir}/" unless dir.end_with?("/")
 
-        URI::Generic.build(scheme: "file", path: dir)
+        URI::Generic.build(scheme: "file", path: URI::RFC2396_PARSER.escape(dir, /[^A-Za-z0-9\-._~\/]/))
       end
 
       def self.fetch_stylesheet(href, base_uri, cache)
@@ -107,7 +110,18 @@ module SilkLayout
 
         URI.join(base_uri.to_s, href)
       rescue URI::InvalidURIError
-        URI.join(base_uri.to_s, URI::DEFAULT_PARSER.escape(href))
+        URI.join(base_uri.to_s, URI::RFC2396_PARSER.escape(href))
+      end
+
+      def self.resolve_resource_urls!(node, base_uri)
+        return unless node
+
+        if node.element? && node.tag == "img"
+          src = node.attributes["src"].to_s.strip
+          node.resolved_source_url = normalize_href(src, base_uri) unless src.empty?
+        end
+
+        node.children.each { |child| resolve_resource_urls!(child, base_uri) }
       end
 
       def self.fetch_http(uri)

@@ -29,11 +29,14 @@ module SilkLayout
         style = node.attributes["style"].to_s.strip
         return nil if style.empty?
 
-        declarations = {}
+        declarations = []
         Crass.parse_properties(style).each do |child|
           next unless child[:node] == :property
 
-          declarations[child[:name]] = Declaration.new(value: child[:value], important: child[:important] ? true : false)
+          declarations << [
+            child[:name].to_s.downcase,
+            Declaration.new(value: child[:value].to_s.strip, important: child[:important] ? true : false)
+          ]
         end
 
         Rule.new(

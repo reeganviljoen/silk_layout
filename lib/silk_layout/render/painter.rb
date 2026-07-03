@@ -9,6 +9,7 @@ module SilkLayout
 
       def self.paint_box(canvas, box, page_height_pt)
         draw_background(canvas, box, page_height_pt)
+        paint_image(canvas, box, page_height_pt) if box.respond_to?(:image?) && box.image?
         draw_borders(canvas, box, page_height_pt)
 
         if box.is_a?(SilkLayout::Layout::TextBox)
@@ -35,6 +36,21 @@ module SilkLayout
         y_pt = page_height_pt - PdfRenderer.px_to_pt(box.y) - ascent_pt
 
         canvas.text(box.text, at: [x_pt, y_pt])
+      end
+
+      def self.paint_image(canvas, box, page_height_pt)
+        return unless box.image_path && File.file?(box.image_path)
+
+        width = box.content_box_width
+        height = box.content_box_height
+        return unless width.positive? && height.positive?
+
+        x_pt = PdfRenderer.px_to_pt(box.content_box_x)
+        y_pt = page_height_pt - PdfRenderer.px_to_pt(box.content_box_y + height)
+        width_pt = PdfRenderer.px_to_pt(width)
+        height_pt = PdfRenderer.px_to_pt(height)
+
+        canvas.image(box.image_path, at: [x_pt, y_pt], width: width_pt, height: height_pt)
       end
 
       def self.draw_background(canvas, box, page_height_pt)
@@ -183,20 +199,7 @@ module SilkLayout
       end
 
       def self.rgb_color(color)
-        normalized = color.to_s.strip.downcase
-        return nil if normalized.empty? || normalized == "transparent"
-
-        return hex_color(normalized) if normalized.start_with?("#")
-
-        NAMED_COLORS[normalized.to_sym]
-      end
-
-      def self.hex_color(color)
-        hex = color.delete_prefix("#")
-        hex = hex.chars.flat_map { |char| [char, char] }.join if hex.length == 3
-        return nil unless hex.match?(/\A[0-9a-f]{6}\z/)
-
-        hex.scan(/../).map { |component| component.to_i(16) }
+        SilkLayout::CSS::Color.rgb(color)
       end
 
       def self.draw_corner(canvas, x, y, w, h, vertical_color, horizontal_color, kind)
@@ -233,15 +236,6 @@ module SilkLayout
       end
 
       private_class_method :paint_box
-
-      NAMED_COLORS = {
-        black: [0, 0, 0],
-        blue: [0, 0, 255],
-        green: [0, 128, 0],
-        lightblue: [173, 216, 230],
-        red: [255, 0, 0],
-        white: [255, 255, 255]
-      }.freeze
     end
   end
 end

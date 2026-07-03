@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 0.1 Release
+title: 0.2 Release
 ---
 
 <section class="hero" id="goal">
@@ -8,11 +8,11 @@ title: 0.1 Release
   <h1>SilkLayout is building a full Ruby layout engine.</h1>
   <p class="lede">
     The goal is to render real HTML and CSS documents to PDF without shelling out to a browser engine.
-    The 0.1 release is the first practical milestone: block layout, inline text, box model styling,
-    basic flexbox, and PDF painting for text, borders, and backgrounds.
+    The 0.2 release track builds on the first practical milestone with a clearer support matrix,
+    packaging smoke checks, and targeted work on images, CSS values, color parsing, and print sizing.
   </p>
   <div class="notice">
-    SilkLayout is not 1.0 yet. The current work is aimed at a useful 0.1 release and a clear path toward browser-like document rendering over time.
+    SilkLayout is not 1.0 yet. Current, partial, and unsupported features are documented explicitly so 0.2 can ship without implying browser-complete CSS support.
   </div>
 </section>
 
@@ -25,11 +25,11 @@ title: 0.1 Release
     </article>
     <article class="panel">
       <h3>Layout</h3>
-      <p>Block stacking, inline text wrapping, width and height handling, box model spacing, and practical flex rows and columns.</p>
+      <p>Block stacking, inline text wrapping, width and height handling, box model spacing, and practical but partial flex rows and columns.</p>
     </article>
     <article class="panel">
       <h3>PDF Rendering</h3>
-      <p>Text, borders, per-side border colors, and simple background colors are painted into generated PDFs.</p>
+      <p>Text, borders, per-side border colors, and simple background colors are current. The 0.2 track adds package smoke coverage for installed-gem rendering.</p>
     </article>
   </div>
 </section>
@@ -125,21 +125,26 @@ title: 0.1 Release
 </section>
 
 <section id="supported">
-  <h2>Supported So Far</h2>
+  <h2>0.2 Support Matrix</h2>
   <ul class="status-list">
-    <li><strong>HTML document parsing</strong><span>Elements, text nodes, stylesheets, and base URLs.</span></li>
-    <li><strong>CSS cascade basics</strong><span>Selectors, specificity, inheritance, inline styles, and important declarations.</span></li>
-    <li><strong>Block layout</strong><span>Stacking, explicit widths, heights, margins, padding, and borders.</span></li>
-    <li><strong>Inline layout</strong><span>Text measurement, line boxes, whitespace normalization, and wrapping.</span></li>
-    <li><strong>Flex layout</strong><span>Rows, columns, reverse directions, wrapping, gaps, grow, shrink, basis, justify, and align basics.</span></li>
-    <li><strong>PDF painting</strong><span>Text, borders, border colors, and simple background colors.</span></li>
+    <li><strong>Current: HTML document parsing</strong><span>Elements, text nodes, attributes, inline styles, style blocks, linked stylesheets, and base URLs.</span></li>
+    <li><strong>Current: CSS cascade basics</strong><span>Selectors, specificity, inheritance, inline styles, important declarations, and fail-closed handling for unsupported selectors.</span></li>
+    <li><strong>Current: Block and inline layout</strong><span>Block stacking, text measurement, line boxes, whitespace normalization, wrapping, margins, padding, borders, width, and height.</span></li>
+    <li><strong>Current: Visual regression harness</strong><span>Chromium reference PDFs, SilkLayout PDFs, PNG conversion, and pixel comparison with artifacts in <code>tmp/visual/</code>.</span></li>
+    <li><strong>Partial: Flex layout</strong><span>Rows, columns, reverse directions, wrapping, gaps, grow, shrink, basis, justify, and align basics are covered; complete flexbox parity is not.</span></li>
+    <li><strong>Partial / 0.2 target: CSS values and colors</strong><span>Pixel lengths are current. The 0.2 track covers common percent and <code>calc()</code> lengths plus named, hex, RGB, HSL, alpha, and transparent colors.</span></li>
+    <li><strong>Partial / 0.2 target: Images</strong><span>Local image loading, intrinsic sizing, and PDF smoke coverage are planned. Remote images, SVG, animated formats, object fitting, and object positioning remain unsupported.</span></li>
+    <li><strong>Partial / 0.2 target: Print sizing</strong><span>Explicit page options are current. The 0.2 track covers basic <code>@page size</code> handling, not full paged-media behavior.</span></li>
+    <li><strong>Unsupported: Pagination and fragmentation</strong><span>Page breaks, repeated headers and footers, multi-page overflow, widows, orphans, and fragmentation controls are not implemented yet.</span></li>
+    <li><strong>Unsupported: Advanced layout</strong><span>CSS Grid, positioning, floats, tables, and list markers are not implemented yet.</span></li>
+    <li><strong>Unsupported: Advanced painting</strong><span>Border radius, shadows, gradients, background images, filters, transforms, and blend modes are not implemented yet.</span></li>
   </ul>
 </section>
 <section id="before-1">
   <h2>Before 1.0</h2>
   <ul class="roadmap-list">
-    <li><strong>Images</strong><span>Load and size local and remote images in PDF output.</span></li>
-    <li><strong>Percent and calc sizing</strong><span>Resolve relative sizes against containing blocks.</span></li>
+    <li><strong>Remote images and richer media</strong><span>Extend the 0.2 local-image work to remote assets, SVG, and more replaced-element behavior.</span></li>
+    <li><strong>Complete CSS sizing</strong><span>Broaden percent and calc support into the full sizing model and more containing-block cases.</span></li>
     <li><strong>Min and max constraints</strong><span>Support min/max width and height in block and flex layout.</span></li>
     <li><strong>Pagination</strong><span>Page breaks, repeated headers/footers, and overflow across pages.</span></li>
     <li><strong>CSS Grid</strong><span>Track sizing, placement, and grid gaps after flex stabilizes.</span></li>

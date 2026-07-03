@@ -6,20 +6,13 @@ This project follows a lightweight changelog format while it is pre-1.0.
 
 ## Unreleased
 
-- Add 0.2 release/DX documentation, including a current/partial/unsupported
-  support matrix and explicit unit, visual, single-fixture, and package smoke
-  commands.
-- Add a package smoke Rake task and CI job that builds the gem, installs it into
-  a temporary `GEM_HOME`, requires the installed package, and renders a smoke
-  PDF.
+- Nothing yet.
 
 ## 0.2.0
 
-Draft notes for the 0.2 release. Before tagging, verify each runtime bullet
-against the merged implementation and move any unfinished item back to
-Unreleased or the before-1.0 roadmap.
+Released rendering foundations for the 0.2 line.
 
-### Planned runtime scope
+### Runtime Scope
 
 - Local raster image loading, intrinsic image sizing, and PDF rendering smoke
   coverage.
